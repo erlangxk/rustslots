@@ -6,6 +6,8 @@ mod tests {
     }
 }
 
+#[macro_use]
+extern crate maplit;
 
 pub mod utils;
 pub mod game1;
