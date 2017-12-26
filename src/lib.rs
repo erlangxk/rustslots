@@ -8,6 +8,7 @@ mod tests {
 
 #[macro_use]
 extern crate maplit;
+extern crate rand;
 
 pub mod utils;
 pub mod game1;

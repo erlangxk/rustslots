@@ -5,3 +5,4 @@ authors = ["erlangxk <simon.xikun@gmail.com>"]
 
 [dependencies]
 maplit = "1.0.0"
+rand = "0.4.1"
