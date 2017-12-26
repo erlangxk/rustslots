@@ -45,7 +45,7 @@ fn line_crop(line: &Vec<Index>, reel: &Vec<Symbol>) -> Vec<Symbol> {
 pub fn crop(reel_strips: &ReelStrips, matrix: &Matrix) -> Vec<Vec<Symbol>> {
     matrix
         .iter()
-        .zip(reel_strips.iter())
+        .zip(reel_strips)
         .map(|(m, r)| line_crop(m, r))
         .collect()
 }
