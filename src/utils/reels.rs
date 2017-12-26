@@ -20,6 +20,12 @@ pub struct ReelMeta {
     total: u16,
 }
 
+impl ReelMeta {
+    pub fn new(length:u16, total:u16)-> ReelMeta {
+        ReelMeta {length, total}
+    }
+}
+
 pub fn matrix<F>(reels: &[ReelMeta], rng: F) -> Matrix
 where
     F: Fn(Index) -> Index,
@@ -36,7 +42,7 @@ fn line_crop(line: &Vec<Index>, reel: &Vec<Symbol>) -> Vec<Symbol> {
     line.iter().map(|i| reel[*i as usize]).collect()
 }
 
-pub fn crop(matrix: &Matrix, reel_strips: &ReelStrips) -> Vec<Vec<Symbol>> {
+pub fn crop(reel_strips: &ReelStrips, matrix: &Matrix) -> Vec<Vec<Symbol>> {
     matrix
         .iter()
         .zip(reel_strips.iter())
@@ -61,16 +67,7 @@ mod tests {
 
     #[test]
     fn test_matrix() {
-        let meta = [
-            ReelMeta {
-                length: 3,
-                total: 33,
-            },
-            ReelMeta {
-                length: 2,
-                total: 40,
-            },
-        ];
+        let meta = [ReelMeta::new(3, 33), ReelMeta::new(2,40),];
         static mut START: u16 = 3;
         fn rng2(_x: u16) -> u16 {
             unsafe {
@@ -78,8 +75,15 @@ mod tests {
                 START
             }
         };
-
         let result = matrix(&meta, rng2);
         assert_eq!(result, vec![vec![4, 5, 6], vec![5, 6]]);
+    }
+
+    #[test]
+    fn test_crop(){
+        let matrix = vec![vec![1,3,5,2], vec![7,8,9,0]];
+        let reel = vec![vec![9,11,2,33,24,5], vec![10,1,2,3,4,5,6,7,8,9]];
+        let result = vec![vec![11,33,5,2], vec![7,8,9,10]];
+        assert_eq!(result, crop(&reel, &matrix));
     }
 }
