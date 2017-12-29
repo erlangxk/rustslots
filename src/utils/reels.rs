@@ -1,9 +1,6 @@
 use rand::{thread_rng, Rng};
 
-use super::common::*;
-
-pub type Symbol = u8;
-pub type ReelStrips = Vec<Vec<Symbol>>;
+use super::common::{Idx, Matrix, Reel, ReelMeta, ReelStrips};
 
 pub fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
     let last = start + len;
@@ -27,11 +24,11 @@ where
 }
 
 #[inline(always)]
-fn line_crop(line: &Vec<Idx>, reel: &Vec<Symbol>) -> Vec<Symbol> {
-    line.iter().map(|i| reel[**i as usize]).collect()
+fn line_crop(line: &Vec<Idx>, reel: &Reel) -> Reel {
+    line.iter().map(|i| reel[**i]).collect()
 }
 
-pub fn crop(reel_strips: &ReelStrips, matrix: &Matrix) -> Vec<Vec<Symbol>> {
+pub fn crop(reel_strips: &ReelStrips, matrix: &Matrix) -> ReelStrips {
     matrix
         .iter()
         .zip(reel_strips)
@@ -47,11 +44,21 @@ pub fn rng(max: Idx) -> Idx {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use super::super::common::Symbol;
     #[test]
     fn test_ring() {
-        assert_eq!(vec![Idx(12), Idx(13), Idx(14), Idx(0), Idx(1), Idx(2)], ring(Idx(15), Idx(12), 6));
-        assert_eq!(vec![Idx(12), Idx(13), Idx(14), Idx(0), Idx(1)], ring(Idx(15), Idx(12), 5));
-        assert_eq!(vec![Idx(0), Idx(1), Idx(2), Idx(0), Idx(1), Idx(2), Idx(0)], ring(Idx(3), Idx(0), 7));
+        assert_eq!(
+            vec![Idx(12), Idx(13), Idx(14), Idx(0), Idx(1), Idx(2)],
+            ring(Idx(15), Idx(12), 6)
+        );
+        assert_eq!(
+            vec![Idx(12), Idx(13), Idx(14), Idx(0), Idx(1)],
+            ring(Idx(15), Idx(12), 5)
+        );
+        assert_eq!(
+            vec![Idx(0), Idx(1), Idx(2), Idx(0), Idx(1), Idx(2), Idx(0)],
+            ring(Idx(3), Idx(0), 7)
+        );
     }
 
     #[test]
@@ -65,7 +72,10 @@ mod tests {
             }
         };
         let result = matrix(&meta, rng2);
-        assert_eq!(result, vec![vec![Idx(4), Idx(5), Idx(6)], vec![Idx(5), Idx(6)]]);
+        assert_eq!(
+            result,
+            vec![vec![Idx(4), Idx(5), Idx(6)], vec![Idx(5), Idx(6)]]
+        );
     }
 
     #[test]
@@ -75,10 +85,31 @@ mod tests {
             vec![Idx(7), Idx(8), Idx(9), Idx(0)],
         ];
         let reel = vec![
-            vec![9, 11, 2, 33, 24, 5],
-            vec![10, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            vec![
+                Symbol(9),
+                Symbol(11),
+                Symbol(2),
+                Symbol(33),
+                Symbol(24),
+                Symbol(5),
+            ],
+            vec![
+                Symbol(10),
+                Symbol(1),
+                Symbol(2),
+                Symbol(3),
+                Symbol(4),
+                Symbol(5),
+                Symbol(6),
+                Symbol(7),
+                Symbol(8),
+                Symbol(9),
+            ],
         ];
-        let result = vec![vec![11, 33, 5, 2], vec![7, 8, 9, 10]];
+        let result = vec![
+            vec![Symbol(11), Symbol(33), Symbol(5), Symbol(2)],
+            vec![Symbol(7), Symbol(8), Symbol(9), Symbol(10)],
+        ];
         assert_eq!(result, crop(&reel, &matrix));
     }
 }
