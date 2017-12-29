@@ -1,27 +1,6 @@
 use rand::{thread_rng, Rng};
-use std::ops::{Add, Deref};
 
-#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
-pub struct Idx(u16);
-
-impl Deref for Idx {
-    type Target = u16;
-
-    fn deref(&self) -> &u16 {
-        &self.0
-    }
-}
-
-impl Add<u8> for Idx {
-    type Output = Idx;
-
-    fn add(self, other: u8) -> Idx {
-        Idx(self.0 + (other as u16))
-    }
-}
-
-///pub type Idx = u16;
-pub type Matrix = Vec<Vec<Idx>>;
+use super::common::*;
 
 pub type Symbol = u8;
 pub type ReelStrips = Vec<Vec<Symbol>>;
@@ -33,17 +12,6 @@ pub fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
         result.push(Idx(i % max.0));
     }
     result
-}
-
-pub struct ReelMeta {
-    length: u8,
-    total: u16,
-}
-
-impl ReelMeta {
-    pub fn new(length: u8, total: u16) -> ReelMeta {
-        ReelMeta { length, total }
-    }
 }
 
 pub fn matrix<F>(reels: &[ReelMeta], rng: F) -> Matrix
