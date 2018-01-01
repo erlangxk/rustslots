@@ -12,9 +12,9 @@ pub fn line_def2(raw: &[usize]) -> Line {
 }
 
 pub fn result_lines(lines: &MultiLines, reels: &Vec<Vec<Symbol>>) -> Vec<Vec<Symbol>> {
-    let mut result = Vec::<Vec<Symbol>>::new();
+    let mut result = Vec::new();
     for line in lines {
-        let mut lr = Vec::<Symbol>::new();
+        let mut lr = Vec::new();
         for c in line {
             lr.push(reels[c.0][c.1]);
         }
