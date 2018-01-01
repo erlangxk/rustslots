@@ -4,7 +4,7 @@ use utils::calc::calc_mul;
 use utils::reels::random_spin;
 use utils::lines::result_lines;
 
-pub fn lines() -> Vec<Vec<C>> {
+fn lines() -> Vec<Vec<C>> {
     vec![
         vec![C(3, 0), C(4, 0), C(5, 0)],
         vec![C(0, 0), C(1, 0), C(2, 0)],
@@ -17,7 +17,7 @@ pub fn lines() -> Vec<Vec<C>> {
     ]
 }
 
-pub fn reel_metas() -> Vec<M> {
+fn reel_metas() -> Vec<M> {
     vec![
         M(1, 33),
         M(1, 33),
@@ -31,7 +31,7 @@ pub fn reel_metas() -> Vec<M> {
     ]
 }
 
-pub fn reel_strips() -> Vec<Vec<S>> {
+fn reel_strips() -> Vec<Vec<S>> {
     let line1 = || {
         vec![
             S(0),
@@ -163,7 +163,7 @@ pub fn reel_strips() -> Vec<Vec<S>> {
     ]
 }
 
-pub fn normal_pay_table() -> PayTable {
+fn normal_pay_table() -> PayTable {
     hashmap!(
         S(0) => hashmap!(3 => 10),
         S(1) => hashmap!(3 => 20),
@@ -176,7 +176,7 @@ pub fn normal_pay_table() -> PayTable {
     )
 }
 
-pub fn floating_pay_table() -> PayTable {
+fn floating_pay_table() -> PayTable {
     hashmap!(S(8) => hashmap!(3 => 200, 2 => 10, 1 => 2))
 }
 
@@ -210,13 +210,11 @@ fn calc_result(result: &Vec<Vec<S>>, pt1: &PayTable, pt2: &PayTable) -> Vec<Calc
     let mut r1 = Vec::new();
     for (line, symbols) in result.iter().enumerate() {
         let pr1 = parse_line_without_wild(&symbols);
-        let mr1 = calc_mul(&pt1, &pr1);
-        if let Some(mul) = mr1 {
+        if let Some(mul) = calc_mul(&pt1, &pr1) {
             r1.push(CalcResult::new(line, &pr1, mul));
         }
         let pr2 = parse_floating_symbol(&symbols);
-        let mr2 = calc_mul(&pt2, &pr2);
-        if let Some(mul) = mr2 {
+        if let Some(mul) = calc_mul(&pt2, &pr2) {
             r1.push(CalcResult::new(line, &pr2, mul));
         }
     }
@@ -224,11 +222,11 @@ fn calc_result(result: &Vec<Vec<S>>, pt1: &PayTable, pt2: &PayTable) -> Vec<Calc
 }
 
 pub struct Game {
-    pub reel_metas: Vec<M>,
-    pub reel_strips: Vec<Vec<S>>,
-    pub lines: MultiLines,
-    pub normal_pay_table: PayTable,
-    pub floating_pay_table: PayTable,
+    reel_metas: Vec<M>,
+    reel_strips: Vec<Vec<S>>,
+    lines: MultiLines,
+    normal_pay_table: PayTable,
+    floating_pay_table: PayTable,
 }
 
 impl Spin for Game {
