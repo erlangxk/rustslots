@@ -49,3 +49,8 @@ pub type ReelStrips = Vec<Vec<Symbol>>;
 
 
 pub type PayTable = HashMap<Symbol, HashMap<usize, u16>>;
+
+
+pub trait Spin {
+    fn spin(&self, line_bet: f64) -> (f64, f64);
+}

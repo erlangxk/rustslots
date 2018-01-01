@@ -1,5 +1,8 @@
-use utils::common::{Coord as C, PayTable, ReelMeta as M, Symbol as S};
-use utils::subst::ParseResult;
+use utils::common::{Coord as C, MultiLines, PayTable, ReelMeta as M, Spin, Symbol as S};
+use utils::subst::{parse_line_without_wild, ParseResult};
+use utils::calc::calc_mul;
+use utils::reels::random_spin;
+use utils::lines::result_lines;
 
 pub fn lines() -> Vec<Vec<C>> {
     vec![
@@ -179,15 +182,16 @@ pub fn floating_pay_table() -> PayTable {
 
 #[derive(Debug)]
 pub struct CalcResult {
- ///   pub line: usize,
+    pub line: usize,
     pub symbol: S,
     pub count: usize,
     pub mul: u16,
 }
 
 impl CalcResult {
-    pub fn new(parse_result: &ParseResult, mul: u16) -> CalcResult {
+    pub fn new(line: usize, parse_result: &ParseResult, mul: u16) -> CalcResult {
         CalcResult {
+            line,
             mul,
             symbol: parse_result.symbol,
             count: parse_result.count,
@@ -202,40 +206,49 @@ fn parse_floating_symbol(line: &Vec<S>) -> ParseResult {
 }
 
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use utils::reels;
-    use utils::lines;
-    use utils::subst;
-    use utils::calc;
-
-    #[test]
-    fn test_random_spin() {
-        let r = reels::random_spin(&reel_metas(), &reel_strips());
-        println!("{:?}", r);
-
-        let r = lines::result_lines(&lines(), &r);
-        println!("{:?}", r);
-
-        let mut r1 = Vec::new();
-
-        let pt1 = normal_pay_table();
-        let pt2 = floating_pay_table();
-
-        for line in r {
-            let pr1 = subst::parse_line_without_wild(&line);
-            let mr1 = calc::calc_mul(&pt1, &pr1);
-            if let Some(mul) = mr1 {
-                r1.push(CalcResult::new(&pr1, mul));
-            }
-
-            let pr2 = parse_floating_symbol(&line);
-            let mr2 = calc::calc_mul(&pt2, &pr2);
-            if let Some(mul) = mr2 {
-                r1.push(CalcResult::new(&pr2, mul));
-            }
+fn calc_result(result: &Vec<Vec<S>>, pt1: &PayTable, pt2: &PayTable) -> Vec<CalcResult> {
+    let mut r1 = Vec::new();
+    for (line, symbols) in result.iter().enumerate() {
+        let pr1 = parse_line_without_wild(&symbols);
+        let mr1 = calc_mul(&pt1, &pr1);
+        if let Some(mul) = mr1 {
+            r1.push(CalcResult::new(line, &pr1, mul));
         }
-        println!("{:?}", r1);
+        let pr2 = parse_floating_symbol(&symbols);
+        let mr2 = calc_mul(&pt2, &pr2);
+        if let Some(mul) = mr2 {
+            r1.push(CalcResult::new(line, &pr2, mul));
+        }
+    }
+    r1
+}
+
+pub struct Game {
+    pub reel_metas: Vec<M>,
+    pub reel_strips: Vec<Vec<S>>,
+    pub lines: MultiLines,
+    pub normal_pay_table: PayTable,
+    pub floating_pay_table: PayTable,
+}
+
+impl Spin for Game {
+    fn spin(&self, line_bet: f64) -> (f64, f64) {
+        let r = random_spin(&self.reel_metas, &self.reel_strips);
+        let r = result_lines(&self.lines, &r);
+        let r = calc_result(&r, &self.normal_pay_table, &self.floating_pay_table);
+        let tm: u16 = r.iter().map(|cr| cr.mul).sum();
+        (line_bet * 8_f64, line_bet * (tm as f64))
+    }
+}
+
+impl Game {
+    pub fn new() -> Game {
+        Game {
+            reel_metas: reel_metas(),
+            reel_strips: reel_strips(),
+            lines: lines(),
+            normal_pay_table: normal_pay_table(),
+            floating_pay_table: floating_pay_table(),
+        }
     }
 }
