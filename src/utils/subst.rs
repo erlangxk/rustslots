@@ -6,13 +6,13 @@ pub struct ParseResult {
     pub count: usize,
 }
 
-fn parse_line<F>(line: &[Symbol], subst: &F) -> ParseResult
+fn parse_line<F>(symbols: &[Symbol], subst: &F) -> ParseResult
 where
     F: Fn(Symbol, Symbol) -> Option<Symbol>,
 {
-    let mut symbol = line[0];
+    let mut symbol = symbols[0];
     let mut count = 1;
-    for i in &line[1..] {
+    for i in &symbols[1..] {
         if let Some(s) = subst(symbol, *i) {
             symbol = s;
             count += 1;
@@ -42,15 +42,15 @@ where
 }
 
 
-pub fn parse_line_without_wild(line: &[Symbol]) -> ParseResult {
-    parse_line(line, &subst_simple)
+pub fn parse_line_without_wild(symbols: &[Symbol]) -> ParseResult {
+    parse_line(symbols, &subst_simple)
 }
 
-pub fn parse_line_with_wild<F>(line: &[Symbol], subst: &F) -> ParseResult
+pub fn parse_line_with_wild<F>(symbols: &[Symbol], subst: &F) -> ParseResult
 where
     F: Fn(Symbol, Symbol) -> Option<Symbol>,
 {
-    parse_line(line, &|fst, snd| subst_complex(subst, fst, snd))
+    parse_line(symbols, &|fst, snd| subst_complex(subst, fst, snd))
 }
 
 

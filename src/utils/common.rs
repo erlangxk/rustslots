@@ -1,4 +1,5 @@
 use std::ops::{Add, Deref};
+use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Idx(pub usize);
@@ -30,7 +31,6 @@ pub type MultiLines = Vec<Vec<Coord>>;
 pub struct ReelMeta(pub u8, pub usize);
 
 impl ReelMeta {
-    
     #[inline(always)]
     pub fn length(&self) -> u8 {
         self.0
@@ -46,3 +46,6 @@ impl ReelMeta {
 pub struct Symbol(pub u8);
 pub type Reel = Vec<Symbol>;
 pub type ReelStrips = Vec<Vec<Symbol>>;
+
+
+pub type PayTable = HashMap<Symbol, HashMap<usize, u16>>;
