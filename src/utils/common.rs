@@ -26,18 +26,23 @@ pub struct Coord(pub usize, pub usize);
 pub type Line = Vec<Coord>;
 pub type MultiLines = Vec<Vec<Coord>>;
 
-pub struct ReelMeta {
-    pub length: u8,
-    pub total: usize,
-}
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct ReelMeta(pub u8, pub usize);
 
 impl ReelMeta {
-    pub fn new(length: u8, total: usize) -> ReelMeta {
-        ReelMeta { length, total }
+    
+    #[inline(always)]
+    pub fn length(&self) -> u8 {
+        self.0
+    }
+
+    #[inline(always)]
+    pub fn total(&self) -> usize {
+        self.1
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Symbol(pub u8);
 pub type Reel = Vec<Symbol>;
 pub type ReelStrips = Vec<Vec<Symbol>>;

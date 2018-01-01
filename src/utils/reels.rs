@@ -2,7 +2,7 @@ use rand::{thread_rng, Rng};
 
 use super::common::{Idx, Matrix, Reel, ReelMeta, ReelStrips};
 
-pub fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
+fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
     let last = start + len;
     let mut result: Vec<Idx> = Vec::new();
     for i in start.0..last.0 {
@@ -11,16 +11,26 @@ pub fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
     result
 }
 
-pub fn matrix<F>(reels: &[ReelMeta], mut rng: F) -> Matrix
+fn matrix<F>(reel_metas: &[ReelMeta], mut rng: F) -> Matrix
 where
     F: FnMut(Idx) -> Idx,
 {
     let mut result = Vec::new();
-    for r in reels {
-        let max = Idx(r.total);
-        result.push(ring(max, rng(max), r.length));
+    for r in reel_metas {
+        let max = Idx(r.total());
+        result.push(ring(max, rng(max), r.length()));
     }
     result
+}
+
+fn rng(max: Idx) -> Idx {
+    let mut rng = thread_rng();
+    Idx(rng.gen_range(0, max.0))
+}
+
+
+pub fn random_matrix(reels_metas: &[ReelMeta]) -> Matrix {
+    matrix(reels_metas, rng)
 }
 
 #[inline(always)]
@@ -36,10 +46,10 @@ pub fn crop(reel_strips: &ReelStrips, matrix: &Matrix) -> ReelStrips {
         .collect()
 }
 
-pub fn rng(max: Idx) -> Idx {
-    let mut rng = thread_rng();
-    Idx(rng.gen_range(0, max.0))
+pub fn random_spin(reels_metas: &[ReelMeta], reel_strips: &ReelStrips) -> ReelStrips {
+    crop(reel_strips, &random_matrix(reels_metas))
 }
+
 
 #[cfg(test)]
 mod tests {
@@ -63,9 +73,9 @@ mod tests {
 
     #[test]
     fn test_matrix() {
-        let meta = [ReelMeta::new(3, 33), ReelMeta::new(2, 40)];
+        let meta = vec![ReelMeta(3, 33), ReelMeta(2, 40)];
         let mut start = Idx(3);
-        let rng2 = |_:Idx| {
+        let rng2 = |_: Idx| {
             start = start + 1;
             start
         };
