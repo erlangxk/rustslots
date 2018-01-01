@@ -66,6 +66,7 @@ mod tests {
         }
     }
 
+    #[inline(always)]
     fn assert(r: ParseResult, v: u8, count: usize) {
         assert_eq!(
             r,
@@ -75,6 +76,17 @@ mod tests {
             }
         );
     }
+
+    #[inline(always)]
+    fn assert_without_wild(line: &[Symbol], v: u8, count: usize) {
+        assert(parse_line_without_wild(&line), v, count)
+    }
+
+    #[inline(always)]
+    fn assert_with_wild(line: &[Symbol], v: u8, count: usize) {
+        assert(parse_line_with_wild(&line, &subst), v, count);
+    }
+
 
     #[test]
     fn test_subst_simple() {
@@ -96,49 +108,49 @@ mod tests {
     #[test]
     fn test_parse_line_without_wild_1() {
         let line = [Symbol(3), Symbol(8), Symbol(3)];
-        assert(parse_line_without_wild(&line), 3, 1);
+        assert_without_wild(&line, 3, 1);
     }
 
 
     #[test]
     fn test_parse_line_without_wild_2() {
         let line = [Symbol(3), Symbol(3), Symbol(8), Symbol(3)];
-        assert(parse_line_without_wild(&line), 3, 2);
+        assert_without_wild(&line, 3, 2);
     }
 
     #[test]
     fn test_parse_line_with_wild_1() {
         let line = [Symbol(3), Symbol(8), Symbol(3)];
-        assert(parse_line_with_wild(&line, &subst), 3, 1);
+        assert_with_wild(&line, 3, 1);
 
         let line = [Symbol(8), Symbol(3), Symbol(3)];
-        assert(parse_line_with_wild(&line, &subst), 8, 1);
+        assert_with_wild(&line, 8, 1);
     }
 
     #[test]
     fn test_parse_line_with_wild_2() {
         let line = [Symbol(4), Symbol(8), Symbol(3)];
-        assert(parse_line_with_wild(&line, &subst), 4, 2);
+        assert_with_wild(&line, 4, 2);
 
         let line = [Symbol(8), Symbol(4), Symbol(3)];
-        assert(parse_line_with_wild(&line, &subst), 4, 2);
+        assert_with_wild(&line, 4, 2);
 
         let line = [Symbol(8), Symbol(4), Symbol(8), Symbol(4), Symbol(5)];
-        assert(parse_line_with_wild(&line, &subst), 4, 4);
+        assert_with_wild(&line, 4, 4);
 
         let line = [Symbol(8), Symbol(8), Symbol(8), Symbol(4), Symbol(5)];
-        assert(parse_line_with_wild(&line, &subst), 4, 4);
+        assert_with_wild(&line, 4, 4);
 
         let line = [Symbol(8), Symbol(4), Symbol(4), Symbol(4), Symbol(5)];
-        assert(parse_line_with_wild(&line, &subst), 4, 4);
+        assert_with_wild(&line, 4, 4);
 
         let line = [Symbol(4), Symbol(4), Symbol(4), Symbol(4), Symbol(5)];
-        assert(parse_line_with_wild(&line, &subst), 4, 4);
+        assert_with_wild(&line, 4, 4);
 
         let line = [Symbol(4), Symbol(4), Symbol(8), Symbol(8), Symbol(5)];
-        assert(parse_line_with_wild(&line, &subst), 4, 4);
+        assert_with_wild(&line, 4, 4);
 
         let line = [Symbol(4), Symbol(4), Symbol(4), Symbol(8), Symbol(5)];
-        assert(parse_line_with_wild(&line, &subst), 4, 4);
+        assert_with_wild(&line, 4, 4);
     }
 }
