@@ -11,9 +11,9 @@ pub fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
     result
 }
 
-pub fn matrix<F>(reels: &[ReelMeta], rng: F) -> Matrix
+pub fn matrix<F>(reels: &[ReelMeta], mut rng: F) -> Matrix
 where
-    F: Fn(Idx) -> Idx,
+    F: FnMut(Idx) -> Idx,
 {
     let mut result = Vec::new();
     for r in reels {
@@ -64,12 +64,10 @@ mod tests {
     #[test]
     fn test_matrix() {
         let meta = [ReelMeta::new(3, 33), ReelMeta::new(2, 40)];
-        static mut START: Idx = Idx(3);
-        fn rng2(_x: Idx) -> Idx {
-            unsafe {
-                START = Idx(START.0 + 1);
-                START
-            }
+        let mut start = Idx(3);
+        let rng2 = |_:Idx| {
+            start = start + 1;
+            start
         };
         let result = matrix(&meta, rng2);
         assert_eq!(
