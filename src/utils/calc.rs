@@ -1,25 +1,21 @@
-use super::subst::ParseResult;
 use super::common::Symbol;
 use std::collections::HashMap;
 
 pub type PayTable = HashMap<Symbol, HashMap<usize, u16>>;
 
 #[derive(Debug)]
-pub struct CalcResult {
-    pub line: usize,
+pub struct MulResult {
     pub symbol: Symbol,
     pub count: usize,
     pub mul: u16,
 }
 
-pub fn calc_mul(line: usize, table: &PayTable, parse_result: &ParseResult) -> Option<CalcResult> {
-    let ParseResult { symbol, count } = *parse_result;
+pub fn calc_mul(table: &PayTable, symbol: Symbol, count: usize) -> Option<MulResult> {
     table.get(&symbol).and_then(|m| m.get(&count)).map(|v| {
-        CalcResult {
-            line,
-            mul: *v,
+        MulResult {
             symbol,
             count,
+            mul: *v,
         }
     })
 }
@@ -45,7 +41,7 @@ mod tests {
     }
 
     fn calc_mul_test(table: &PayTable, parse_result: &ParseResult) -> Option<u16> {
-        calc_mul(1, table, parse_result).map(|v| v.mul)
+        calc_mul(table, parse_result).map(|v| v.mul)
     }
 
     #[test]

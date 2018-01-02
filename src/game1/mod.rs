@@ -1,8 +1,8 @@
 mod configs;
 
-use utils::common::{MultiLines, Spin, Symbol, ReelMeta};
+use utils::common::{MultiLines, ReelMeta, Spin, Symbol};
 use utils::subst::{parse_line_without_wild, ParseResult};
-use utils::calc::{calc_mul, CalcResult, PayTable};
+use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::random_spin;
 use utils::lines::{reel_metas_with_same_len, result_lines};
 
@@ -10,19 +10,18 @@ static FLOATING_SYMBOL: Symbol = Symbol(8);
 
 fn parse_floating_symbol(line: &Vec<Symbol>) -> ParseResult {
     let count = line.iter().filter(|s| **s == FLOATING_SYMBOL).count();
-    ParseResult {
-        symbol: FLOATING_SYMBOL,
-        count,
-    }
+    (FLOATING_SYMBOL, count)
 }
 
-fn calc_result(result: &Vec<Vec<Symbol>>, pt1: &PayTable, pt2: &PayTable) -> Vec<CalcResult> {
+fn calc_result(result: &Vec<Vec<Symbol>>, pt1: &PayTable, pt2: &PayTable) -> Vec<MulResult> {
     let mut r1 = Vec::new();
-    for (line, symbols) in result.iter().enumerate() {
-        if let Some(cr) = calc_mul(line, &pt1, &parse_line_without_wild(&symbols)) {
+    for symbols in result.iter() {
+        let (symbol, count) = parse_line_without_wild(&symbols);
+        if let Some(cr) = calc_mul(&pt1, symbol, count) {
             r1.push(cr);
         }
-        if let Some(cr) = calc_mul(line, &pt2, &parse_floating_symbol(&symbols)) {
+        let (symbol, count) = parse_floating_symbol(&symbols);
+        if let Some(cr) = calc_mul(&pt2, symbol, count) {
             r1.push(cr);
         }
     }

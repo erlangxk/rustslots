@@ -1,17 +1,6 @@
 use super::common::Symbol;
 
-#[derive(PartialEq, Debug)]
-pub struct ParseResult {
-    pub symbol: Symbol,
-    pub count: usize,
-}
-
-impl ParseResult {
-    #[inline(always)]
-    pub fn new(symbol: Symbol, count: usize) -> ParseResult {
-        ParseResult { symbol, count }
-    }
-}
+pub type ParseResult = (Symbol, usize);
 
 fn parse_line<F>(symbols: &[Symbol], subst: &F) -> ParseResult
 where
@@ -27,7 +16,7 @@ where
             break;
         }
     }
-    ParseResult::new(symbol, count)
+    (symbol, count)
 }
 
 fn subst_simple(fst: Symbol, snd: Symbol) -> Option<Symbol> {
@@ -75,7 +64,7 @@ mod tests {
 
     #[inline(always)]
     fn assert(r: ParseResult, v: u8, count: usize) {
-        assert_eq!(r, ParseResult::new(Symbol(v), count));
+        assert_eq!(r, (Symbol(v), count));
     }
 
     #[inline(always)]
