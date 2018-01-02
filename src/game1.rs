@@ -2,7 +2,7 @@ use utils::common::{Coord as C, MultiLines, ReelMeta as M, Spin, Symbol as S};
 use utils::subst::{parse_line_without_wild, ParseResult};
 use utils::calc::{calc_mul, CalcResult, PayTable};
 use utils::reels::random_spin;
-use utils::lines::result_lines;
+use utils::lines::{reel_metas_with_same_len, result_lines};
 
 fn lines() -> Vec<Vec<C>> {
     vec![
@@ -14,20 +14,6 @@ fn lines() -> Vec<Vec<C>> {
         vec![C(2, 0), C(5, 0), C(8, 0)],
         vec![C(0, 0), C(4, 0), C(8, 0)],
         vec![C(2, 0), C(4, 0), C(6, 0)],
-    ]
-}
-
-fn reel_metas() -> Vec<M> {
-    vec![
-        M(1, 33),
-        M(1, 33),
-        M(1, 33),
-        M(1, 40),
-        M(1, 40),
-        M(1, 40),
-        M(1, 33),
-        M(1, 33),
-        M(1, 33),
     ]
 }
 
@@ -199,6 +185,7 @@ fn calc_result(result: &Vec<Vec<S>>, pt1: &PayTable, pt2: &PayTable) -> Vec<Calc
     r1
 }
 
+#[derive(Debug)]
 pub struct Game {
     reel_metas: Vec<M>,
     reel_strips: Vec<Vec<S>>,
@@ -219,9 +206,10 @@ impl Spin for Game {
 
 impl Game {
     pub fn new() -> Game {
+        let reel_strips = reel_strips();
         Game {
-            reel_metas: reel_metas(),
-            reel_strips: reel_strips(),
+            reel_metas: reel_metas_with_same_len(1, &reel_strips),
+            reel_strips,
             lines: lines(),
             normal_pay_table: normal_pay_table(),
             floating_pay_table: floating_pay_table(),

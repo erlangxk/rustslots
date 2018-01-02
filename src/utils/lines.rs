@@ -1,14 +1,7 @@
-use super::common::{Coord, Line, MultiLines, ReelStrips, Symbol};
+use super::common::{MultiLines, ReelMeta, ReelStrips, Symbol};
 
-pub fn line_def1(raw: &[usize]) -> Line {
-    raw.iter().map(|&v| Coord(v, 0)).collect()
-}
-
-pub fn line_def2(raw: &[usize]) -> Line {
-    raw.iter()
-        .enumerate()
-        .map(|(index, &v)| Coord(index, v))
-        .collect()
+pub fn reel_metas_with_same_len(len: u8, reels: &ReelStrips) -> Vec<ReelMeta> {
+    reels.iter().map(|r| ReelMeta(len, r.len())).collect()
 }
 
 pub fn result_lines(lines: &MultiLines, reels: &ReelStrips) -> Vec<Vec<Symbol>> {
