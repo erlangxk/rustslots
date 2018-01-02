@@ -1,18 +1,34 @@
-use super::common::PayTable;
 use super::subst::ParseResult;
+use super::common::Symbol;
+use std::collections::HashMap;
 
-pub fn calc_mul(table: &PayTable, parse_result: &ParseResult) -> Option<u16> {
-    table
-        .get(&parse_result.symbol)
-        .and_then(|m| m.get(&parse_result.count))
-        .map(|v| *v)
+pub type PayTable = HashMap<Symbol, HashMap<usize, u16>>;
+
+#[derive(Debug)]
+pub struct CalcResult {
+    pub line: usize,
+    pub symbol: Symbol,
+    pub count: usize,
+    pub mul: u16,
+}
+
+pub fn calc_mul(line: usize, table: &PayTable, parse_result: &ParseResult) -> Option<CalcResult> {
+    let ParseResult { symbol, count } = *parse_result;
+    table.get(&symbol).and_then(|m| m.get(&count)).map(|v| {
+        CalcResult {
+            line,
+            mul: *v,
+            symbol,
+            count,
+        }
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use utils::subst::ParseResult;
-    use utils::common::{PayTable, Symbol as S};
+    use utils::common::Symbol as S;
 
     fn pay_table() -> PayTable {
         hashmap!(
@@ -28,28 +44,32 @@ mod tests {
         )
     }
 
+    fn calc_mul_test(table: &PayTable, parse_result: &ParseResult) -> Option<u16> {
+        calc_mul(1, table, parse_result).map(|v| v.mul)
+    }
+
     #[test]
     fn test_calc_mul() {
         let pt = pay_table();
-        let r = calc_mul(&pt, &ParseResult::new(S(8), 2));
+        let r = calc_mul_test(&pt, &ParseResult::new(S(8), 2));
         assert_eq!(r, Some(10));
 
-        let r = calc_mul(&pt, &ParseResult::new(S(8), 3));
+        let r = calc_mul_test(&pt, &ParseResult::new(S(8), 3));
         assert_eq!(r, Some(200));
 
-        let r = calc_mul(&pt, &ParseResult::new(S(8), 1));
+        let r = calc_mul_test(&pt, &ParseResult::new(S(8), 1));
         assert_eq!(r, Some(2));
 
-        let r = calc_mul(&pt, &ParseResult::new(S(3), 3));
+        let r = calc_mul_test(&pt, &ParseResult::new(S(3), 3));
         assert_eq!(r, Some(40));
 
-        let r = calc_mul(&pt, &ParseResult::new(S(3), 2));
+        let r = calc_mul_test(&pt, &ParseResult::new(S(3), 2));
         assert_eq!(r, None);
 
-        let r = calc_mul(&pt, &ParseResult::new(S(7), 3));
+        let r = calc_mul_test(&pt, &ParseResult::new(S(7), 3));
         assert_eq!(r, Some(1000));
-        
-        let r = calc_mul(&pt, &ParseResult::new(S(7), 2));
+
+        let r = calc_mul_test(&pt, &ParseResult::new(S(7), 2));
         assert_eq!(r, None);
     }
 

@@ -1,6 +1,6 @@
-use utils::common::{Coord as C, MultiLines, PayTable, ReelMeta as M, Spin, Symbol as S};
+use utils::common::{Coord as C, MultiLines, ReelMeta as M, Spin, Symbol as S};
 use utils::subst::{parse_line_without_wild, ParseResult};
-use utils::calc::calc_mul;
+use utils::calc::{calc_mul, CalcResult, PayTable};
 use utils::reels::random_spin;
 use utils::lines::result_lines;
 
@@ -180,42 +180,20 @@ fn floating_pay_table() -> PayTable {
     hashmap!(S(8) => hashmap!(3 => 200, 2 => 10, 1 => 2))
 }
 
-#[derive(Debug)]
-pub struct CalcResult {
-    pub line: usize,
-    pub symbol: S,
-    pub count: usize,
-    pub mul: u16,
-}
-
-impl CalcResult {
-    pub fn new(line: usize, parse_result: &ParseResult, mul: u16) -> CalcResult {
-        CalcResult {
-            line,
-            mul,
-            symbol: parse_result.symbol,
-            count: parse_result.count,
-        }
-    }
-}
-
 fn parse_floating_symbol(line: &Vec<S>) -> ParseResult {
     let symbol = S(8);
     let count = line.iter().filter(|s| **s == symbol).count();
     ParseResult { symbol, count }
 }
 
-
 fn calc_result(result: &Vec<Vec<S>>, pt1: &PayTable, pt2: &PayTable) -> Vec<CalcResult> {
     let mut r1 = Vec::new();
     for (line, symbols) in result.iter().enumerate() {
-        let pr1 = parse_line_without_wild(&symbols);
-        if let Some(mul) = calc_mul(&pt1, &pr1) {
-            r1.push(CalcResult::new(line, &pr1, mul));
+        if let Some(cr) = calc_mul(line, &pt1, &parse_line_without_wild(&symbols)) {
+            r1.push(cr);
         }
-        let pr2 = parse_floating_symbol(&symbols);
-        if let Some(mul) = calc_mul(&pt2, &pr2) {
-            r1.push(CalcResult::new(line, &pr2, mul));
+        if let Some(cr) = calc_mul(line, &pt2, &parse_floating_symbol(&symbols)) {
+            r1.push(cr);
         }
     }
     r1
