@@ -19,27 +19,9 @@ pub fn result_lines(lines: &MultiLines, reels: &ReelStrips) -> Vec<Vec<Symbol>> 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use utils::common::Coord as C;
 
-    #[test]
-    fn test_line_def1() {
-        let line = [3, 4, 5];
-        assert_eq!(
-            vec![Coord(3, 0), Coord(4, 0), Coord(5, 0)],
-            line_def1(&line)
-        );
-    }
-
-    #[test]
-    fn test_line_def2() {
-        let line = [3, 4, 5];
-        assert_eq!(
-            vec![Coord(0, 3), Coord(1, 4), Coord(2, 5)],
-            line_def2(&line)
-        );
-    }
-
-    fn lines() -> Vec<Vec<Coord>> {
-        use utils::common::Coord as C;
+    fn lines() -> Vec<Vec<C>> {
         vec![
             vec![C(3, 0), C(4, 0), C(5, 0)],
             vec![C(2, 0), C(4, 0), C(6, 0)],
