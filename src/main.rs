@@ -9,7 +9,7 @@ fn main() {
     let mut cost:f64 = 0_f64;
     let mut win:f64 =0_f64;
     let game = Game::new();
-    for _ in 0..100000 {
+    for _ in 0..10000000 {
         let (c,w) = game.spin(1_f64);
         cost += c;
         win += w;

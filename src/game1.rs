@@ -171,8 +171,8 @@ fn normal_pay_table() -> PayTable {
         S(3) => hashmap!(3 => 40),
         S(4) => hashmap!(3 => 80),
         S(5) => hashmap!(3 => 100),
-        S(6) => hashmap!(3 => 100),
-        S(7) => hashmap!(3 => 100),
+        S(6) => hashmap!(3 => 200),
+        S(7) => hashmap!(3 => 1000),
     )
 }
 

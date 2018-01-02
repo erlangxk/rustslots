@@ -6,6 +6,13 @@ pub struct ParseResult {
     pub count: usize,
 }
 
+impl ParseResult {
+    #[inline(always)]
+    pub fn new(symbol: Symbol, count: usize) -> ParseResult {
+        ParseResult { symbol, count }
+    }
+}
+
 fn parse_line<F>(symbols: &[Symbol], subst: &F) -> ParseResult
 where
     F: Fn(Symbol, Symbol) -> Option<Symbol>,
@@ -20,7 +27,7 @@ where
             break;
         }
     }
-    ParseResult { symbol, count }
+    ParseResult::new(symbol, count)
 }
 
 fn subst_simple(fst: Symbol, snd: Symbol) -> Option<Symbol> {
@@ -68,13 +75,7 @@ mod tests {
 
     #[inline(always)]
     fn assert(r: ParseResult, v: u8, count: usize) {
-        assert_eq!(
-            r,
-            ParseResult {
-                symbol: Symbol(v),
-                count,
-            }
-        );
+        assert_eq!(r, ParseResult::new(Symbol(v), count));
     }
 
     #[inline(always)]
@@ -106,14 +107,9 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_line_without_wild_1() {
+    fn test_parse_line_without_wild() {
         let line = [Symbol(3), Symbol(8), Symbol(3)];
         assert_without_wild(&line, 3, 1);
-    }
-
-
-    #[test]
-    fn test_parse_line_without_wild_2() {
         let line = [Symbol(3), Symbol(3), Symbol(8), Symbol(3)];
         assert_without_wild(&line, 3, 2);
     }
@@ -129,12 +125,6 @@ mod tests {
 
     #[test]
     fn test_parse_line_with_wild_2() {
-        let line = [Symbol(4), Symbol(8), Symbol(3)];
-        assert_with_wild(&line, 4, 2);
-
-        let line = [Symbol(8), Symbol(4), Symbol(3)];
-        assert_with_wild(&line, 4, 2);
-
         let line = [Symbol(8), Symbol(4), Symbol(8), Symbol(4), Symbol(5)];
         assert_with_wild(&line, 4, 4);
 
