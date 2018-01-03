@@ -3,3 +3,4 @@ pub mod lines;
 pub mod reels;
 pub mod subst;
 pub mod calc;
+pub mod scatter;
