@@ -16,7 +16,7 @@ pub fn lines() -> Vec<Vec<Coord>> {
 }
 
 pub fn reel_strips() -> Vec<Vec<S>> {
-    let line1 = || {
+    vec![
         vec![
             S(6),
             S(2),
@@ -55,10 +55,7 @@ pub fn reel_strips() -> Vec<Vec<S>> {
             S(10),
             S(1),
             S(0),
-        ]
-    };
-
-    let line2 = || {
+        ],
         vec![
             S(9),
             S(3),
@@ -103,9 +100,7 @@ pub fn reel_strips() -> Vec<Vec<S>> {
             S(0),
             S(8),
             S(1),
-        ]
-    };
-    let line3 = || {
+        ],
         vec![
             S(4),
             S(2),
@@ -150,9 +145,7 @@ pub fn reel_strips() -> Vec<Vec<S>> {
             S(2),
             S(6),
             S(5),
-        ]
-    };
-    let line4 = || {
+        ],
         vec![
             S(2),
             S(7),
@@ -197,10 +190,7 @@ pub fn reel_strips() -> Vec<Vec<S>> {
             S(8),
             S(1),
             S(6),
-        ]
-    };
-
-    let line5 = || {
+        ],
         vec![
             S(8),
             S(7),
@@ -237,14 +227,13 @@ pub fn reel_strips() -> Vec<Vec<S>> {
             S(8),
             S(3),
             S(0),
-        ]
-    };
-
-    vec![line1(), line2(), line3(), line4(), line5()]
+        ],
+    ]
 }
 
 
-pub fn normal_pay_table()->PayTable { hashmap!(
+pub fn normal_pay_table() -> PayTable {
+    hashmap!(
         S(0) => hashmap!(5 => 70,  4 => 25, 3 => 10),
         S(1) => hashmap!(5 => 70,  4 => 25, 3 => 10),
         S(2) => hashmap!(5 => 80,  4 => 30, 3 => 10),
@@ -258,7 +247,8 @@ pub fn normal_pay_table()->PayTable { hashmap!(
     )
 }
 
-pub fn scatter_pay_table()->PayTable { hashmap!(
+pub fn scatter_pay_table() -> PayTable {
+    hashmap!(
         S(10) => hashmap!(5 => 85, 4 => 10, 3 => 3),
     )
 }
