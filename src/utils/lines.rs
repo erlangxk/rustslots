@@ -19,17 +19,12 @@ pub fn result_lines(lines: &MultiLines, reels: &ReelStrips) -> Vec<Vec<Symbol>> 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use utils::common::Coord as C;
-
-    fn lines() -> Vec<Vec<C>> {
-        vec![
-            vec![C(3, 0), C(4, 0), C(5, 0)],
-            vec![C(2, 0), C(4, 0), C(6, 0)],
-        ]
+    use utils::common::{Coord, Symbol as S};
+    fn lines() -> Vec<Vec<Coord>> {
+        vec![vec![(3, 0), (4, 0), (5, 0)], vec![(2, 0), (4, 0), (6, 0)]]
     }
 
-    fn reels() -> Vec<Vec<Symbol>> {
-        use utils::common::Symbol as S;
+    fn reels() -> Vec<Vec<S>> {
         vec![
             vec![S(0)],
             vec![S(1)],

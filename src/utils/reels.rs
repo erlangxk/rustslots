@@ -54,7 +54,7 @@ pub fn random_spin(reels_metas: &[ReelMeta], reel_strips: &ReelStrips) -> ReelSt
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::super::common::Symbol;
+    use super::super::common::Symbol as S;
     #[test]
     fn test_ring() {
         assert_eq!(
@@ -94,29 +94,29 @@ mod tests {
         ];
         let reel = vec![
             vec![
-                Symbol(9),
-                Symbol(11),
-                Symbol(2),
-                Symbol(33),
-                Symbol(24),
-                Symbol(5),
+                S(9),
+                S(11),
+                S(2),
+                S(33),
+                S(24),
+                S(5),
             ],
             vec![
-                Symbol(10),
-                Symbol(1),
-                Symbol(2),
-                Symbol(3),
-                Symbol(4),
-                Symbol(5),
-                Symbol(6),
-                Symbol(7),
-                Symbol(8),
-                Symbol(9),
+                S(10),
+                S(1),
+                S(2),
+                S(3),
+                S(4),
+                S(5),
+                S(6),
+                S(7),
+                S(8),
+                S(9),
             ],
         ];
         let result = vec![
-            vec![Symbol(11), Symbol(33), Symbol(5), Symbol(2)],
-            vec![Symbol(7), Symbol(8), Symbol(9), Symbol(10)],
+            vec![S(11), S(33), S(5), S(2)],
+            vec![S(7), S(8), S(9), S(10)],
         ];
         assert_eq!(result, crop(&reel, &matrix));
     }

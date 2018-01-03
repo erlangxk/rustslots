@@ -1,4 +1,4 @@
-use utils::common::{Coord as C, Symbol as S};
+use utils::common::{Coord, Symbol as S};
 use utils::calc::PayTable;
 
 pub fn reel_strips() -> Vec<Vec<S>> {
@@ -134,16 +134,16 @@ pub fn reel_strips() -> Vec<Vec<S>> {
 }
 
 
-pub fn lines() -> Vec<Vec<C>> {
+pub fn lines() -> Vec<Vec<Coord>> {
     vec![
-        vec![C(3, 0), C(4, 0), C(5, 0)],
-        vec![C(0, 0), C(1, 0), C(2, 0)],
-        vec![C(6, 0), C(7, 0), C(8, 0)],
-        vec![C(0, 0), C(3, 0), C(6, 0)],
-        vec![C(1, 0), C(4, 0), C(7, 0)],
-        vec![C(2, 0), C(5, 0), C(8, 0)],
-        vec![C(0, 0), C(4, 0), C(8, 0)],
-        vec![C(2, 0), C(4, 0), C(6, 0)],
+        vec![(3, 0), (4, 0), (5, 0)],
+        vec![(0, 0), (1, 0), (2, 0)],
+        vec![(6, 0), (7, 0), (8, 0)],
+        vec![(0, 0), (3, 0), (6, 0)],
+        vec![(1, 0), (4, 0), (7, 0)],
+        vec![(2, 0), (5, 0), (8, 0)],
+        vec![(0, 0), (4, 0), (8, 0)],
+        vec![(2, 0), (4, 0), (6, 0)],
     ]
 }
 

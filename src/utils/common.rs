@@ -20,9 +20,7 @@ impl Add<u8> for Idx {
     }
 }
 
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Coord(pub usize, pub usize);
-
+pub type Coord = (usize, usize);
 pub type Line = Vec<Coord>;
 pub type MultiLines = Vec<Vec<Coord>>;
 
