@@ -5,35 +5,24 @@ use utils::subst::parse_line_with_wild;
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::random_spin;
 use utils::lines::{reel_metas_with_same_len, result_lines};
+use utils::scatter::count_single_scatter_unique;
 
 static SCATTER_SYMBOL: Symbol = Symbol(10);
 static WILD_SYMBOL: Symbol = Symbol(11);
 
-#[inline(always)]
-fn is_scatter(s: &Symbol) -> bool {
-    *s == SCATTER_SYMBOL
-}
-
 fn subst(fst: Symbol, snd: Symbol) -> Option<Symbol> {
-    if fst == WILD_SYMBOL && !is_scatter(&snd) {
+    if fst == WILD_SYMBOL && snd != SCATTER_SYMBOL {
         Some(snd)
     } else {
         None
     }
 }
 
-#[inline(always)]
-fn count_scatter(reel: &Vec<Symbol>) -> u16 {
-    for s in reel {
-        if is_scatter(s) {
-            return 1;
-        }
-    }
-    0
-}
-
 fn scatter_result(reel_strips: &Vec<Vec<Symbol>>, pt: &PayTable) -> u16 {
-    let count: u16 = reel_strips.iter().map(|r| count_scatter(r)).sum();
+    let count: u16 = reel_strips
+        .iter()
+        .map(|r| count_single_scatter_unique(r, &SCATTER_SYMBOL))
+        .sum();
     if count != 0 {
         calc_mul(pt, SCATTER_SYMBOL, count as usize).map_or(0, |v| v.mul)
     } else {
@@ -69,7 +58,7 @@ impl Spin for Game {
         let r = calc_result(&r, &self.normal_pay_table);
         let tm: u16 = r.iter().map(|cr| cr.mul).sum();
         let total_bet = line_bet * 9_f64;
-        (total_bet, line_bet * (tm  as f64) + total_bet * (sm as f64))
+        (total_bet, line_bet * (tm as f64) + total_bet * (sm as f64))
     }
 }
 

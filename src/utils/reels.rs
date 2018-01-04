@@ -35,7 +35,7 @@ pub fn random_matrix(reels_metas: &[ReelMeta]) -> Matrix {
 
 #[inline(always)]
 fn line_crop(line: &Vec<Idx>, reel: &Reel) -> Reel {
-    line.iter().map(|i| reel[**i]).collect()
+    line.iter().map(|&i| reel[*i]).collect()
 }
 
 pub fn crop(reel_strips: &ReelStrips, matrix: &Matrix) -> ReelStrips {
