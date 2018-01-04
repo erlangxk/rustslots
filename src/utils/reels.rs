@@ -1,6 +1,6 @@
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
-use super::common::{Idx, Matrix, ReelMeta, ReelStrips, Symbol};
+use super::common::{Idx, Matrix, ReelMeta, ReelStrips, Symbol, Wheel};
 
 fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
     let last = start + len;
@@ -36,7 +36,11 @@ fn line_pick(line: &Vec<Idx>, reel: &Vec<Symbol>) -> Vec<Symbol> {
     line.iter().map(|&i| reel[*i]).collect()
 }
 
-fn line_replace(line: &Vec<Idx>, reel: &Vec<Symbol>, replace_table: &HashMap<Symbol, Symbol>) -> Vec<Symbol> {
+fn line_replace(
+    line: &Vec<Idx>,
+    reel: &Vec<Symbol>,
+    replace_table: &HashMap<Symbol, Symbol>,
+) -> Vec<Symbol> {
     line.iter()
         .map(|&i| {
             let s = reel[*i];
@@ -48,18 +52,20 @@ fn line_replace(line: &Vec<Idx>, reel: &Vec<Symbol>, replace_table: &HashMap<Sym
         .collect()
 }
 
-pub fn crop<F>(reel_strips: &ReelStrips, matrix: &Matrix, line_crop: F) -> ReelStrips
+pub fn crop<F>(reel_strips: &ReelStrips, matrix: &Matrix, line_crop: F) -> Wheel
 where
     F: Fn(&Vec<Idx>, &Vec<Symbol>) -> Vec<Symbol>,
 {
-    matrix
-        .iter()
-        .zip(reel_strips)
-        .map(|(m, r)| line_crop(m, r))
-        .collect()
+    Wheel(
+        matrix
+            .iter()
+            .zip(reel_strips.iter())
+            .map(|(m, r)| line_crop(m, r))
+            .collect(),
+    )
 }
 
-pub fn random_spin(reels_metas: &[ReelMeta], reel_strips: &ReelStrips) -> ReelStrips {
+pub fn random_spin(reels_metas: &[ReelMeta], reel_strips: &ReelStrips) -> Wheel {
     crop(reel_strips, &random_matrix(reels_metas), line_pick)
 }
 
@@ -67,7 +73,7 @@ pub fn random_spin_replace(
     reels_metas: &[ReelMeta],
     reel_strips: &ReelStrips,
     replace_table: &HashMap<Symbol, Symbol>,
-) -> ReelStrips {
+) -> Wheel {
     crop(reel_strips, &random_matrix(reels_metas), |line, reel| {
         line_replace(line, reel, replace_table)
     })
@@ -114,20 +120,20 @@ mod tests {
             vec![Idx(1), Idx(3), Idx(5), Idx(2)],
             vec![Idx(7), Idx(8), Idx(9), Idx(0)],
         ];
-        let reel = vec![
+        let reelstrips = ReelStrips(vec![
             vec![S(9), S(11), S(2), S(33), S(24), S(5)],
             vec![S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
-        ];
+        ]);
         let result = vec![
             vec![S(11), S(33), S(5), S(2)],
             vec![S(7), S(8), S(9), S(10)],
         ];
-        assert_eq!(result, crop(&reel, &matrix, line_pick));
+        assert_eq!(result, crop(&reelstrips, &matrix, line_pick).0);
         assert_eq!(
             result,
-            crop(&reel, &matrix, |line, reel| {
+            crop(&reelstrips, &matrix, |line, reel| {
                 line_replace(line, reel, &HashMap::new())
-            })
+            }).0
         );
     }
 
@@ -137,19 +143,19 @@ mod tests {
             vec![Idx(1), Idx(3), Idx(5), Idx(2)],
             vec![Idx(7), Idx(8), Idx(9), Idx(0)],
         ];
-        let reel = vec![
+        let reelstrips = ReelStrips(vec![
             vec![S(9), S(11), S(2), S(33), S(24), S(5)],
             vec![S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
-        ];
+        ]);
         let result = vec![
             vec![S(99), S(33), S(5), S(2)],
             vec![S(7), S(8), S(9), S(10)],
         ];
         assert_eq!(
             result,
-            crop(&reel, &matrix, |line, reel| {
+            crop(&reelstrips, &matrix, |line, reel| {
                 line_replace(line, reel, &hashmap!(S(11)=> S(99)))
-            })
+            }).0
         );
     }
 }

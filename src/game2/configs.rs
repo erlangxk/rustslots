@@ -1,4 +1,4 @@
-use utils::common::{Coord, Symbol as S};
+use utils::common::{Coord, ReelStrips, Symbol as S};
 use utils::calc::PayTable;
 
 pub fn lines() -> Vec<Vec<Coord>> {
@@ -15,8 +15,8 @@ pub fn lines() -> Vec<Vec<Coord>> {
     ]
 }
 
-pub fn reel_strips() -> Vec<Vec<S>> {
-    vec![
+pub fn reel_strips() -> ReelStrips {
+    let vs = vec![
         vec![
             S(6),
             S(2),
@@ -228,7 +228,8 @@ pub fn reel_strips() -> Vec<Vec<S>> {
             S(3),
             S(0),
         ],
-    ]
+    ];
+    ReelStrips(vs)
 }
 
 

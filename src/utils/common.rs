@@ -41,8 +41,27 @@ impl ReelMeta {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Symbol(pub u8);
-pub type ReelStrips = Vec<Vec<Symbol>>;
 
+#[derive(Debug)]
+pub struct ReelStrips(pub Vec<Vec<Symbol>>);
+
+impl Deref for ReelStrips {
+    type Target = Vec<Vec<Symbol>>;
+
+    fn deref(&self) -> &Vec<Vec<Symbol>> {
+        &self.0
+    }
+}
+
+#[derive(Debug)]
+pub struct Wheel(pub Vec<Vec<Symbol>>);
+impl Deref for Wheel {
+    type Target = Vec<Vec<Symbol>>;
+
+    fn deref(&self) -> &Vec<Vec<Symbol>> {
+        &self.0
+    }
+}
 
 pub trait Spin {
     fn spin(&self, line_bet: f64) -> (f64, f64);

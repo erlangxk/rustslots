@@ -1,4 +1,4 @@
-use utils::common::{Coord, Symbol as S};
+use utils::common::{Coord, ReelStrips, Symbol as S};
 use utils::calc::PayTable;
 use std::collections::HashMap;
 
@@ -316,8 +316,8 @@ pub fn normal_pay_table() -> PayTable {
     )
 }
 
-pub fn reel_strips_m1() -> Vec<Vec<S>> {
-    vec![
+pub fn reel_strips_m1() -> ReelStrips {
+    let vs = vec![
         vec![
             S(3),
             S(1),
@@ -637,12 +637,12 @@ pub fn reel_strips_m1() -> Vec<Vec<S>> {
             S(0),
             S(0),
         ],
-    ]
+    ];
+    ReelStrips(vs)
 }
 
-
-pub fn reel_strips_m2() -> Vec<Vec<S>> {
-    vec![
+pub fn reel_strips_m2() -> ReelStrips {
+    let vs = vec![
         vec![
             S(3),
             S(1),
@@ -751,11 +751,12 @@ pub fn reel_strips_m2() -> Vec<Vec<S>> {
             S(2),
             S(0),
         ],
-    ]
+    ];
+    ReelStrips(vs)
 }
 
-pub fn reel_strips_f1() -> Vec<Vec<S>> {
-    vec![
+pub fn reel_strips_f1() -> ReelStrips {
+    let vs = vec![
         vec![
             S(3),
             S(1),
@@ -1082,5 +1083,6 @@ pub fn reel_strips_f1() -> Vec<Vec<S>> {
             S(4),
             S(4),
         ],
-    ]
+    ];
+    ReelStrips(vs)
 }

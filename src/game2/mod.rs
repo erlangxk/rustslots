@@ -1,6 +1,6 @@
 mod configs;
 
-use utils::common::{MultiLines, ReelMeta, Spin, Symbol};
+use utils::common::{MultiLines, ReelMeta, Spin, Symbol, ReelStrips};
 use utils::subst::parse_line_with_wild;
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::random_spin;
@@ -44,7 +44,7 @@ fn calc_result(result: &LinesResult, pt1: &PayTable) -> Vec<MulResult> {
 #[derive(Debug)]
 pub struct Game {
     reel_metas: Vec<ReelMeta>,
-    reel_strips: Vec<Vec<Symbol>>,
+    reel_strips: ReelStrips,
     lines: MultiLines,
     normal_pay_table: PayTable,
     scatter_pay_table: PayTable,

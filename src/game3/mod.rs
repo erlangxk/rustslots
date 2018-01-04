@@ -1,6 +1,6 @@
 mod configs;
 
-use utils::common::{MultiLines, ReelMeta, Spin, Symbol};
+use utils::common::{MultiLines, ReelMeta, ReelStrips, Spin, Symbol, Wheel};
 use utils::subst::parse_line_with_wild;
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::{random_spin, random_spin_replace};
@@ -11,20 +11,20 @@ use rand::{thread_rng, Rng};
 #[derive(Debug)]
 pub struct Game {
     reel_metas_m1: Vec<ReelMeta>,
-    reel_strips_m1: Vec<Vec<Symbol>>,
+    reel_strips_m1: ReelStrips,
 
     reel_metas_m2: Vec<ReelMeta>,
-    reel_strips_m2: Vec<Vec<Symbol>>,
+    reel_strips_m2: ReelStrips,
 
     reel_metas_f1: Vec<ReelMeta>,
-    reel_strips_f1: Vec<Vec<Symbol>>,
+    reel_strips_f1: ReelStrips,
     lines: MultiLines,
     normal_pay_table: PayTable,
     mystery_replacement_table: Vec<(f64, Symbol)>,
 }
 
-fn scatter_result(reel_strips: &Vec<Vec<Symbol>>) -> u16 {
-    let count: u16 = reel_strips
+fn scatter_result(wheel: &Wheel) -> u16 {
+    let count: u16 = wheel
         .iter()
         .map(|r| {
             count_single_scatter_duplicate(r, &configs::SCATTER_SYMBOL)
@@ -36,8 +36,8 @@ fn scatter_result(reel_strips: &Vec<Vec<Symbol>>) -> u16 {
 fn spin_replace(
     mystery_replacement_table: &Vec<(f64, Symbol)>,
     reel_metas: &Vec<ReelMeta>,
-    reel_strips: &Vec<Vec<Symbol>>,
-) -> Vec<Vec<Symbol>> {
+    reel_strips: &ReelStrips,
+) -> Wheel {
     let mut rng = thread_rng();
     let replace_map = configs::replace_mystery(rng.next_f64(), mystery_replacement_table);
     random_spin_replace(reel_metas, reel_strips, &replace_map)
@@ -94,23 +94,23 @@ impl Game {
     }
 
 
-    pub fn spin_main(&self) -> (Vec<Vec<Symbol>>, u16) {
+    pub fn spin_main(&self) -> (Wheel, u16) {
         let mut rng = thread_rng();
         if rng.next_f64() <= 0.9618 {
-            let reels = spin_replace(
+            let wheel = spin_replace(
                 &self.mystery_replacement_table,
                 &self.reel_metas_m1,
                 &self.reel_strips_m1,
             );
-            (reels, 0)
+            (wheel, 0)
         } else {
-            let reels = random_spin(&self.reel_metas_m2, &self.reel_strips_m2);
-            let freespins = scatter_result(&reels);
-            (reels, freespins)
+            let wheel = random_spin(&self.reel_metas_m2, &self.reel_strips_m2);
+            let freespins = scatter_result(&wheel);
+            (wheel, freespins)
         }
     }
 
-    pub fn spin_feature(&self) -> Vec<Vec<Symbol>> {
+    pub fn spin_feature(&self) -> Wheel {
         spin_replace(
             &self.mystery_replacement_table,
             &self.reel_metas_f1,
@@ -118,8 +118,6 @@ impl Game {
         )
     }
 }
-
-
 
 impl Spin for Game {
     fn spin(&self, line_bet: f64) -> (f64, f64) {

@@ -1,4 +1,4 @@
-use super::common::{MultiLines, ReelMeta, ReelStrips, Symbol};
+use super::common::{MultiLines, ReelMeta, ReelStrips, Symbol, Wheel};
 
 #[derive(Debug, PartialEq)]
 pub struct LinesResult(pub Vec<Vec<Symbol>>);
@@ -16,7 +16,7 @@ pub fn reel_metas_with_diff_len(lens: &[u8], reels: &ReelStrips) -> Vec<ReelMeta
         .collect()
 }
 
-pub fn result_lines(lines: &MultiLines, reels: &ReelStrips) -> LinesResult {
+pub fn result_lines(lines: &MultiLines, reels: &Wheel) -> LinesResult {
     let mut result = Vec::new();
     for line in lines {
         let mut lr = Vec::new();
@@ -36,8 +36,8 @@ mod tests {
         vec![vec![(3, 0), (4, 0), (5, 0)], vec![(2, 0), (4, 0), (6, 0)]]
     }
 
-    fn reels() -> Vec<Vec<S>> {
-        vec![
+    fn wheel() -> Wheel {
+        Wheel(vec![
             vec![S(0)],
             vec![S(1)],
             vec![S(4)],
@@ -47,13 +47,13 @@ mod tests {
             vec![S(0)],
             vec![S(3)],
             vec![S(4)],
-        ]
+        ])
     }
 
     #[test]
     fn test_result_lines() {
         use utils::common::Symbol as S;
-        let r = result_lines(&lines(), &reels());
+        let r = result_lines(&lines(), &wheel());
         assert_eq!(
             r,
             LinesResult(vec![vec![S(7), S(8), S(9)], vec![S(4), S(8), S(0)]])
@@ -62,12 +62,12 @@ mod tests {
 
     #[test]
     fn test_reel_metas() {
-        let reels = vec![vec![S(0), S(1), S(2)], vec![S(3), S(4), S(5), S(6)]];
-        let r = reel_metas_with_same_len(2, &reels);
+        let reelstrips = ReelStrips(vec![vec![S(0), S(1), S(2)], vec![S(3), S(4), S(5), S(6)]]);
+        let r = reel_metas_with_same_len(2, &reelstrips);
         assert_eq!(r, vec![ReelMeta(2, 3), ReelMeta(2, 4)]);
 
         let lens = [1, 3];
-        let r = reel_metas_with_diff_len(&lens, &reels);
+        let r = reel_metas_with_diff_len(&lens, &reelstrips);
         assert_eq!(r, vec![ReelMeta(1, 3), ReelMeta(3, 4)]);
     }
 }
