@@ -4,7 +4,7 @@ use utils::common::{MultiLines, ReelMeta, Spin, Symbol};
 use utils::subst::parse_line_with_wild;
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::random_spin;
-use utils::lines::{reel_metas_with_same_len, result_lines};
+use utils::lines::{reel_metas_with_same_len, result_lines, LinesResult};
 use utils::scatter::count_single_scatter_unique;
 
 static SCATTER_SYMBOL: Symbol = Symbol(10);
@@ -30,9 +30,9 @@ fn scatter_result(reel_strips: &Vec<Vec<Symbol>>, pt: &PayTable) -> u16 {
     }
 }
 
-fn calc_result(result: &Vec<Vec<Symbol>>, pt1: &PayTable) -> Vec<MulResult> {
+fn calc_result(result: &LinesResult, pt1: &PayTable) -> Vec<MulResult> {
     let mut r1 = Vec::new();
-    for symbols in result.iter() {
+    for symbols in result.0.iter() {
         let (symbol, count) = parse_line_with_wild(&symbols, &subst);
         if let Some(cr) = calc_mul(&pt1, symbol, count) {
             r1.push(cr);

@@ -4,7 +4,7 @@ use utils::common::{MultiLines, ReelMeta, Spin, Symbol};
 use utils::subst::{parse_line_without_wild, ParseResult};
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::random_spin;
-use utils::lines::{reel_metas_with_same_len, result_lines};
+use utils::lines::{reel_metas_with_same_len, result_lines, LinesResult};
 
 static FLOATING_SYMBOL: Symbol = Symbol(8);
 
@@ -13,9 +13,9 @@ fn parse_floating_symbol(line: &Vec<Symbol>) -> ParseResult {
     (FLOATING_SYMBOL, count)
 }
 
-fn calc_result(result: &Vec<Vec<Symbol>>, pt1: &PayTable, pt2: &PayTable) -> Vec<MulResult> {
+fn calc_result(result: &LinesResult, pt1: &PayTable, pt2: &PayTable) -> Vec<MulResult> {
     let mut r1 = Vec::new();
-    for symbols in result.iter() {
+    for symbols in result.0.iter() {
         let (symbol, count) = parse_line_without_wild(&symbols);
         if let Some(cr) = calc_mul(&pt1, symbol, count) {
             r1.push(cr);
