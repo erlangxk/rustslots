@@ -1,6 +1,6 @@
 extern crate slots;
 
-use slots::game2::Game;
+use slots::game3::Game;
 use slots::utils::common::Spin;
 
 fn main() {
@@ -10,7 +10,6 @@ fn main() {
     let mut win: f64 = 0_f64;
     let game = Game::new();
 
-    ///println!("{:?}", game);
     for _ in 0..1000000 {
         let (c, w) = game.spin(1_f64);
         cost += c;

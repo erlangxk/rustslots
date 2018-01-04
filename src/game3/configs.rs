@@ -1,5 +1,49 @@
 use utils::common::{Coord, Symbol as S};
 use utils::calc::PayTable;
+use std::collections::HashMap;
+
+pub static REEL_LENS: [u8; 6] = [3, 4, 5, 6, 7, 7];
+pub static SCATTER_SYMBOL: S = S(10);
+pub static WILD_SYMBOL: S = S(11);
+pub static MYSTERY_SYMBOL: S = S(12);
+
+pub fn mystery_replacement_table() -> Vec<(f64, S)> {
+    let ps: [f64; 10] = [0.23, 0.19, 0.19, 0.18, 0.03, 0.07, 0.025, 0.02, 0.025, 0.04];
+    let ss = vec![S(0), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)];
+    ps.iter()
+        .scan(0_f64, |state, &x| {
+            *state = *state + x;
+            Some(*state)
+        })
+        .zip(ss)
+        .collect()
+}
+
+pub fn replace_mystery(v: f64, config: &Vec<(f64, S)>) -> HashMap<S, S> {
+    for i in config {
+        if v <= i.0 {
+            return hashmap!(MYSTERY_SYMBOL => i.1);
+        }
+    }
+    hashmap!(MYSTERY_SYMBOL => S(9))
+}
+
+pub fn freespin_table(scatters: u16) -> u16 {
+    match scatters {
+        10 => 10,
+        11 => 15,
+        12 => 20,
+        13 => 25,
+        14 => 30,
+        15 => 35,
+        16 => 40,
+        17 => 45,
+        18 => 50,
+        19 => 100,
+        20 => 250,
+        _ => 0,
+    }
+}
 
 pub fn lines() -> Vec<Vec<Coord>> {
     vec![
@@ -272,7 +316,7 @@ pub fn normal_pay_table() -> PayTable {
     )
 }
 
-pub fn reel_strips_ma() -> Vec<Vec<S>> {
+pub fn reel_strips_m1() -> Vec<Vec<S>> {
     vec![
         vec![
             S(3),
@@ -597,7 +641,7 @@ pub fn reel_strips_ma() -> Vec<Vec<S>> {
 }
 
 
-pub fn reel_strips_mb() -> Vec<Vec<S>> {
+pub fn reel_strips_m2() -> Vec<Vec<S>> {
     vec![
         vec![
             S(3),
@@ -710,7 +754,7 @@ pub fn reel_strips_mb() -> Vec<Vec<S>> {
     ]
 }
 
-pub fn reel_strips_f() -> Vec<Vec<S>> {
+pub fn reel_strips_f1() -> Vec<Vec<S>> {
     vec![
         vec![
             S(3),
@@ -1039,43 +1083,4 @@ pub fn reel_strips_f() -> Vec<Vec<S>> {
             S(4),
         ],
     ]
-}
-
-pub fn mystery_replacement_table() -> Vec<(f64, S)> {
-    let ps = [0.23, 0.19, 0.19, 0.18, 0.03, 0.07, 0.025, 0.02, 0.025, 0.04];
-    let ss = vec![S(0), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)];
-    let result: Vec<(f64, S)> = ps.iter()
-        .scan(0_f64, |state, &x| {
-            *state = *state + x;
-            Some(*state)
-        })
-        .zip(ss)
-        .collect();
-    result
-}
-
-pub fn replace_mystery(v: f64, config: &Vec<(f64, S)>) -> S {
-    for i in config {
-        if v <= i.0 {
-            return i.1;
-        }
-    }
-    S(9)
-}
-
-pub fn freespin_table(scatters: u16) -> u16 {
-    match scatters {
-        10 => 10,
-        11 => 15,
-        12 => 20,
-        13 => 25,
-        14 => 30,
-        15 => 35,
-        16 => 40,
-        17 => 45,
-        18 => 50,
-        19 => 100,
-        20 => 250,
-        _ => 0,
-    }
 }
