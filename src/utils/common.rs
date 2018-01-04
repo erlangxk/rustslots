@@ -41,7 +41,6 @@ impl ReelMeta {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct Symbol(pub u8);
-pub type Reel = Vec<Symbol>;
 pub type ReelStrips = Vec<Vec<Symbol>>;
 
 

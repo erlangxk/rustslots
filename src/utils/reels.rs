@@ -1,6 +1,6 @@
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
-use super::common::{Idx, Matrix, Reel, ReelMeta, ReelStrips, Symbol};
+use super::common::{Idx, Matrix, ReelMeta, ReelStrips, Symbol};
 
 fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
     let last = start + len;
@@ -32,11 +32,11 @@ pub fn random_matrix(reels_metas: &[ReelMeta]) -> Matrix {
     matrix(reels_metas, rng)
 }
 
-fn line_pick(line: &Vec<Idx>, reel: &Reel) -> Reel {
+fn line_pick(line: &Vec<Idx>, reel: &Vec<Symbol>) -> Vec<Symbol> {
     line.iter().map(|&i| reel[*i]).collect()
 }
 
-fn line_replace(line: &Vec<Idx>, reel: &Reel, replace_table: &HashMap<Symbol, Symbol>) -> Reel {
+fn line_replace(line: &Vec<Idx>, reel: &Vec<Symbol>, replace_table: &HashMap<Symbol, Symbol>) -> Vec<Symbol> {
     line.iter()
         .map(|&i| {
             let s = reel[*i];
@@ -50,7 +50,7 @@ fn line_replace(line: &Vec<Idx>, reel: &Reel, replace_table: &HashMap<Symbol, Sy
 
 pub fn crop<F>(reel_strips: &ReelStrips, matrix: &Matrix, line_crop: F) -> ReelStrips
 where
-    F: Fn(&Vec<Idx>, &Reel) -> Reel,
+    F: Fn(&Vec<Idx>, &Vec<Symbol>) -> Vec<Symbol>,
 {
     matrix
         .iter()
