@@ -2,10 +2,14 @@ use rand::{thread_rng, Rng};
 use std::collections::HashMap;
 use super::common::{Matrix, ReelMeta, ReelStrips, Symbol, Wheel};
 
+type ReplacementTable = HashMap<Symbol, Symbol>;
+type Line = Vec<usize>;
+type Reel = Vec<Symbol>;
+
 fn ring(max: usize, start: usize, len: u8) -> Vec<usize> {
     let lus = len as usize;
     let mut result: Vec<usize> = Vec::with_capacity(lus);
-    for i in start..(start+lus) {
+    for i in start..(start + lus) {
         result.push(i % max);
     }
     result
@@ -32,15 +36,11 @@ pub fn random_matrix(reels_metas: &[ReelMeta]) -> Matrix {
     matrix(reels_metas, rng)
 }
 
-fn line_pick(line: &Vec<usize>, reel: &Vec<Symbol>) -> Vec<Symbol> {
+fn line_pick(line: &Line, reel: &Reel) -> Vec<Symbol> {
     line.iter().map(|&i| reel[i]).collect()
 }
 
-fn line_replace(
-    line: &Vec<usize>,
-    reel: &Vec<Symbol>,
-    replace_table: &HashMap<Symbol, Symbol>,
-) -> Vec<Symbol> {
+fn line_replace(line: &Line, reel: &Reel, replace_table: &ReplacementTable) -> Vec<Symbol> {
     line.iter()
         .map(|&i| {
             let s = reel[i];
@@ -54,7 +54,7 @@ fn line_replace(
 
 pub fn crop<F>(reel_strips: &ReelStrips, matrix: &Matrix, line_crop: F) -> Wheel
 where
-    F: Fn(&Vec<usize>, &Vec<Symbol>) -> Vec<Symbol>,
+    F: Fn(&Line, &Reel) -> Vec<Symbol>,
 {
     Wheel(
         matrix
@@ -72,7 +72,7 @@ pub fn random_spin(reels_metas: &[ReelMeta], reel_strips: &ReelStrips) -> Wheel 
 pub fn random_spin_replace(
     reels_metas: &[ReelMeta],
     reel_strips: &ReelStrips,
-    replace_table: &HashMap<Symbol, Symbol>,
+    replace_table: &ReplacementTable,
 ) -> Wheel {
     crop(reel_strips, &random_matrix(reels_metas), |line, reel| {
         line_replace(line, reel, replace_table)
@@ -85,41 +85,26 @@ mod tests {
     use super::super::common::Symbol as S;
     #[test]
     fn test_ring() {
-        assert_eq!(
-            vec![12, 13, 14, 0, 1, 2],
-            ring(15, 12, 6)
-        );
-        assert_eq!(
-            vec![12, 13, 14, 0, 1],
-            ring(15, 12, 5)
-        );
-        assert_eq!(
-            vec![0, 1, 2, 0, 1, 2, 0],
-            ring(3, 0, 7)
-        );
+        assert_eq!(vec![12, 13, 14, 0, 1, 2], ring(15, 12, 6));
+        assert_eq!(vec![12, 13, 14, 0, 1], ring(15, 12, 5));
+        assert_eq!(vec![0, 1, 2, 0, 1, 2, 0], ring(3, 0, 7));
     }
 
     #[test]
     fn test_matrix() {
         let meta = vec![ReelMeta(3, 33), ReelMeta(2, 40)];
         let mut start = 3;
-        let rng2 = |_:usize| {
+        let rng2 = |_: usize| {
             start = start + 1;
             start
         };
         let result = matrix(&meta, rng2);
-        assert_eq!(
-            result,
-            vec![vec![4, 5, 6], vec![5, 6]]
-        );
+        assert_eq!(result, vec![vec![4, 5, 6], vec![5, 6]]);
     }
 
     #[test]
     fn test_crop_noop() {
-        let matrix = vec![
-            vec![1, 3, 5, 2],
-            vec![7, 8, 9, 0],
-        ];
+        let matrix = vec![vec![1, 3, 5, 2], vec![7, 8, 9, 0]];
         let reelstrips = ReelStrips(vec![
             vec![S(9), S(11), S(2), S(33), S(24), S(5)],
             vec![S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
@@ -139,10 +124,7 @@ mod tests {
 
     #[test]
     fn test_crop_11to99() {
-        let matrix = vec![
-            vec![1, 3, 5, 2],
-            vec![7, 8, 9, 0],
-        ];
+        let matrix = vec![vec![1, 3, 5, 2], vec![7, 8, 9, 0]];
         let reelstrips = ReelStrips(vec![
             vec![S(9), S(11), S(2), S(33), S(24), S(5)],
             vec![S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
