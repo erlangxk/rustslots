@@ -1,7 +1,16 @@
 use super::common::{MultiLines, ReelMeta, ReelStrips, Symbol, Wheel};
+use std::ops::Deref;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct LinesResult(pub Vec<Vec<Symbol>>);
+
+impl Deref for LinesResult {
+    type Target = Vec<Vec<Symbol>>;
+
+    fn deref(&self) -> &Vec<Vec<Symbol>> {
+        &self.0
+    }
+}
 
 pub fn reel_metas_with_same_len(len: u8, reels: &ReelStrips) -> Vec<ReelMeta> {
     reels.iter().map(|r| ReelMeta(len, r.len())).collect()
@@ -55,8 +64,8 @@ mod tests {
         use utils::common::Symbol as S;
         let r = result_lines(&lines(), &wheel());
         assert_eq!(
-            r,
-            LinesResult(vec![vec![S(7), S(8), S(9)], vec![S(4), S(8), S(0)]])
+            r.0,
+            vec![vec![S(7), S(8), S(9)], vec![S(4), S(8), S(0)]]
         );
     }
 

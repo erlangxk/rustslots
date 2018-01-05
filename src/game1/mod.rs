@@ -15,7 +15,7 @@ fn parse_floating_symbol(line: &Vec<Symbol>) -> ParseResult {
 
 fn calc_result(result: &LinesResult, pt1: &PayTable, pt2: &PayTable) -> Vec<MulResult> {
     let mut r1 = Vec::new();
-    for symbols in result.0.iter() {
+    for symbols in result.iter() {
         let (symbol, count) = parse_line_without_wild(&symbols);
         if let Some(cr) = calc_mul(&pt1, symbol, count) {
             r1.push(cr);

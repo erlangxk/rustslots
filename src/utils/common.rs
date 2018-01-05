@@ -21,7 +21,6 @@ impl Add<u8> for Idx {
 }
 
 pub type Coord = (usize, usize);
-pub type Line = Vec<Coord>;
 pub type MultiLines = Vec<Vec<Coord>>;
 
 #[derive(Debug, PartialEq, Clone, Copy)]

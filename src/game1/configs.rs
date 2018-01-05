@@ -1,4 +1,4 @@
-use utils::common::{Coord, Symbol as S, ReelStrips};
+use utils::common::{Coord, ReelStrips, Symbol as S};
 use utils::calc::PayTable;
 
 pub fn reel_strips() -> ReelStrips {

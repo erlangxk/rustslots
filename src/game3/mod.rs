@@ -53,7 +53,7 @@ fn subst(fst: Symbol, snd: Symbol) -> Option<Symbol> {
 
 fn calc_result(result: &LinesResult, pt: &PayTable) -> Vec<MulResult> {
     let mut r1 = Vec::new();
-    for symbols in result.0.iter() {
+    for symbols in result.iter() {
         let (symbol, count) = parse_line_with_wild(&symbols, &subst);
         if let Some(cr) = calc_mul(&pt, symbol, count) {
             r1.push(cr);

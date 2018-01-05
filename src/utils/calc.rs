@@ -39,14 +39,14 @@ mod tests {
         )
     }
 
-    fn assert(r:Option<MulResult>, expected:Option<u16>) {
-         assert_eq!(r.map(|v| v.mul), expected);
+    fn assert(r: Option<MulResult>, expected: Option<u16>) {
+        assert_eq!(r.map(|v| v.mul), expected);
     }
 
     #[test]
     fn test_calc_mul() {
         let pt = pay_table();
-        let r = calc_mul(&pt,S(8), 2);
+        let r = calc_mul(&pt, S(8), 2);
         assert(r, Some(10));
 
         let r = calc_mul(&pt, S(8), 3);
@@ -55,7 +55,7 @@ mod tests {
         let r = calc_mul(&pt, S(8), 1);
         assert(r, Some(2));
 
-        let r = calc_mul(&pt,S(3), 3);
+        let r = calc_mul(&pt, S(3), 3);
         assert(r, Some(40));
 
         let r = calc_mul(&pt, S(3), 2);
