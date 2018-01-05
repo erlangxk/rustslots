@@ -1,4 +1,4 @@
-use super::common::{Coord, MultiLines, ReelMeta, ReelStrips, Symbol, Wheel};
+use super::common::{Coord, ReelMeta, ReelStrips, Symbol, Wheel};
 use std::ops::Deref;
 
 #[derive(Debug)]
@@ -25,18 +25,6 @@ pub fn reel_metas_with_diff_len(lens: &[u8], reels: &ReelStrips) -> Vec<ReelMeta
         .collect()
 }
 
-pub fn result_lines(lines: &MultiLines, reels: &Wheel) -> LinesResult {
-    let mut result = Vec::with_capacity(lines.len());
-    for line in lines {
-        let mut lr = Vec::with_capacity(line.len());
-        for c in line {
-            lr.push(reels[c.0][c.1]);
-        }
-        result.push(lr);
-    }
-    LinesResult(result)
-}
-
 pub fn lines_result(lines: &[&[Coord]], reels: &Wheel) -> LinesResult {
     let mut result = Vec::with_capacity(lines.len());
     for line in lines.iter() {
@@ -53,10 +41,6 @@ pub fn lines_result(lines: &[&[Coord]], reels: &Wheel) -> LinesResult {
 mod tests {
     use super::*;
     use utils::common::{Coord, Symbol as S};
-    fn lines() -> Vec<Vec<Coord>> {
-        vec![vec![(3, 0), (4, 0), (5, 0)], vec![(2, 0), (4, 0), (6, 0)]]
-    }
-
     fn wheel() -> Wheel {
         Wheel(vec![
             vec![S(0)],
@@ -73,8 +57,9 @@ mod tests {
 
     #[test]
     fn test_result_lines() {
+        let lines: [&[Coord]; 2] = [&[(3, 0), (4, 0), (5, 0)], &[(2, 0), (4, 0), (6, 0)]];
         use utils::common::Symbol as S;
-        let r = result_lines(&lines(), &wheel());
+        let r = lines_result(&lines, &wheel());
         assert_eq!(r.0, vec![vec![S(7), S(8), S(9)], vec![S(4), S(8), S(0)]]);
     }
 

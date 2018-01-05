@@ -4,7 +4,7 @@ use utils::common::{ReelMeta, ReelStrips, Spin, Symbol};
 use utils::subst::{parse_line_without_wild, ParseResult};
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::random_spin;
-use utils::lines::{reel_metas_with_same_len, lines_result, LinesResult};
+use utils::lines::{lines_result, reel_metas_with_same_len, LinesResult};
 
 static FLOATING_SYMBOL: Symbol = Symbol(8);
 

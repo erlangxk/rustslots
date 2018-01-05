@@ -2,7 +2,6 @@ use std::ops::Deref;
 
 pub type Matrix = Vec<Vec<usize>>;
 pub type Coord = (usize, usize);
-pub type MultiLines = Vec<Vec<Coord>>;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct ReelMeta(pub u8, pub usize);

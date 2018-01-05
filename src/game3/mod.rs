@@ -1,10 +1,10 @@
 mod configs;
 
-use utils::common::{MultiLines, ReelMeta, ReelStrips, Spin, Symbol, Wheel};
+use utils::common::{ReelMeta, ReelStrips, Spin, Symbol, Wheel};
 use utils::subst::parse_line_with_wild;
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::{random_spin, random_spin_replace};
-use utils::lines::{reel_metas_with_diff_len, result_lines, LinesResult};
+use utils::lines::{lines_result, reel_metas_with_diff_len, LinesResult};
 use utils::scatter::count_single_scatter_duplicate;
 use rand::{thread_rng, Rng};
 
@@ -20,7 +20,6 @@ pub struct Game {
 
     reel_metas_f1: Vec<ReelMeta>,
     reel_strips_f1: ReelStrips,
-    lines: MultiLines,
     normal_pay_table: PayTable,
     mystery_replacement_table: Vec<(f64, Symbol)>,
 }
@@ -89,7 +88,6 @@ impl Game {
             reel_metas_m2,
             reel_strips_f1,
             reel_metas_f1,
-            lines: configs::lines(),
             normal_pay_table: configs::normal_pay_table(),
             mystery_replacement_table,
         }
@@ -129,7 +127,7 @@ impl Spin for Game {
         let total_bet = line_bet * 25_f64;
         let (r, freespins) = self.spin_main();
 
-        let rls = result_lines(&self.lines, &r);
+        let rls = lines_result(&configs::LINES, &r);
         let r = calc_result(&rls, &self.normal_pay_table);
 
         feature += freespins;
@@ -137,7 +135,7 @@ impl Spin for Game {
 
         while feature > 0 {
             let r = self.spin_feature();
-            let rls = result_lines(&self.lines, &r);
+            let rls = lines_result(&configs::LINES, &r);
             let r = calc_result(&rls, &self.normal_pay_table);
             win += total_line_win(&r, line_bet);
             feature -= 1;
