@@ -17,9 +17,9 @@ pub fn reel_metas_with_diff_len(lens: &[u8], reels: &ReelStrips) -> Vec<ReelMeta
 }
 
 pub fn result_lines(lines: &MultiLines, reels: &Wheel) -> LinesResult {
-    let mut result = Vec::new();
+    let mut result = Vec::with_capacity(lines.len());
     for line in lines {
-        let mut lr = Vec::new();
+        let mut lr = Vec::with_capacity(line.len());
         for c in line {
             lr.push(reels[c.0][c.1]);
         }
