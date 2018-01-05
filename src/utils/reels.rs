@@ -4,7 +4,7 @@ use super::common::{Idx, Matrix, ReelMeta, ReelStrips, Symbol, Wheel};
 
 fn ring(max: Idx, start: Idx, len: u8) -> Vec<Idx> {
     let last = start + len;
-    let mut result: Vec<Idx> = Vec::new();
+    let mut result: Vec<Idx> = Vec::with_capacity(len as usize);
     for i in start.0..last.0 {
         result.push(Idx(i % max.0));
     }
@@ -15,7 +15,7 @@ fn matrix<F>(reel_metas: &[ReelMeta], mut rng: F) -> Matrix
 where
     F: FnMut(Idx) -> Idx,
 {
-    let mut result = Vec::new();
+    let mut result = Vec::with_capacity(reel_metas.len());
     for r in reel_metas {
         let max = Idx(r.total());
         result.push(ring(max, rng(max), r.length()));
