@@ -1,6 +1,6 @@
 extern crate slots;
 
-use slots::game3::Game;
+use slots::game1::Game;
 use slots::utils::common::Spin;
 
 fn main() {

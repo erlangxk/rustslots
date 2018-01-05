@@ -1,25 +1,6 @@
-use std::ops::{Add, Deref};
+use std::ops::Deref;
 
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Idx(pub usize);
-pub type Matrix = Vec<Vec<Idx>>;
-
-impl Deref for Idx {
-    type Target = usize;
-
-    fn deref(&self) -> &usize {
-        &self.0
-    }
-}
-
-impl Add<u8> for Idx {
-    type Output = Idx;
-
-    fn add(self, other: u8) -> Idx {
-        Idx(self.0 + (other as usize))
-    }
-}
-
+pub type Matrix = Vec<Vec<usize>>;
 pub type Coord = (usize, usize);
 pub type MultiLines = Vec<Vec<Coord>>;
 
