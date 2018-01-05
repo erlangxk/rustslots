@@ -7,6 +7,8 @@ use utils::reels::random_spin;
 use utils::lines::{reel_metas_with_same_len, result_lines, LinesResult};
 use utils::scatter::count_single_scatter_unique;
 
+//RTP 97.00
+
 static SCATTER_SYMBOL: Symbol = Symbol(10);
 static WILD_SYMBOL: Symbol = Symbol(11);
 

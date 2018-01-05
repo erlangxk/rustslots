@@ -1,10 +1,10 @@
 mod configs;
 
-use utils::common::{MultiLines, ReelMeta, ReelStrips, Spin, Symbol};
+use utils::common::{ReelMeta, ReelStrips, Spin, Symbol};
 use utils::subst::{parse_line_without_wild, ParseResult};
 use utils::calc::{calc_mul, MulResult, PayTable};
 use utils::reels::random_spin;
-use utils::lines::{reel_metas_with_same_len, result_lines, LinesResult};
+use utils::lines::{reel_metas_with_same_len, lines_result, LinesResult};
 
 static FLOATING_SYMBOL: Symbol = Symbol(8);
 
@@ -32,7 +32,6 @@ fn calc_result(result: &LinesResult, pt1: &PayTable, pt2: &PayTable) -> Vec<MulR
 pub struct Game {
     reel_metas: Vec<ReelMeta>,
     reel_strips: ReelStrips,
-    lines: MultiLines,
     normal_pay_table: PayTable,
     floating_pay_table: PayTable,
 }
@@ -40,7 +39,7 @@ pub struct Game {
 impl Spin for Game {
     fn spin(&self, line_bet: f64) -> (f64, f64) {
         let r = random_spin(&self.reel_metas, &self.reel_strips);
-        let r = result_lines(&self.lines, &r);
+        let r = lines_result(&configs::LINES, &r);
         let r = calc_result(&r, &self.normal_pay_table, &self.floating_pay_table);
         let tm: u16 = r.iter().map(|cr| cr.mul).sum();
         (line_bet * 8_f64, line_bet * (tm as f64))
@@ -53,7 +52,6 @@ impl Game {
         Game {
             reel_metas: reel_metas_with_same_len(1, &reel_strips),
             reel_strips,
-            lines: configs::lines(),
             normal_pay_table: configs::normal_pay_table(),
             floating_pay_table: configs::floating_pay_table(),
         }

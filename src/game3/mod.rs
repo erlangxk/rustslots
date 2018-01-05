@@ -8,6 +8,8 @@ use utils::lines::{reel_metas_with_diff_len, result_lines, LinesResult};
 use utils::scatter::count_single_scatter_duplicate;
 use rand::{thread_rng, Rng};
 
+//RTP 96.88
+
 #[derive(Debug)]
 pub struct Game {
     reel_metas_m1: Vec<ReelMeta>,
