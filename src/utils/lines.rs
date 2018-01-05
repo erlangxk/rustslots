@@ -1,4 +1,4 @@
-use super::common::{MultiLines, ReelMeta, ReelStrips, Symbol, Wheel};
+use super::common::{Coord, MultiLines, ReelMeta, ReelStrips, Symbol, Wheel};
 use std::ops::Deref;
 
 #[derive(Debug)]
@@ -37,6 +37,18 @@ pub fn result_lines(lines: &MultiLines, reels: &Wheel) -> LinesResult {
     LinesResult(result)
 }
 
+pub fn lines_result(lines: &[&[Coord]], reels: &Wheel) -> LinesResult {
+    let mut result = Vec::with_capacity(lines.len());
+    for line in lines.iter() {
+        let mut lr = Vec::with_capacity(line.len());
+        for c in line.iter() {
+            lr.push(reels[c.0][c.1]);
+        }
+        result.push(lr);
+    }
+    LinesResult(result)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -63,10 +75,7 @@ mod tests {
     fn test_result_lines() {
         use utils::common::Symbol as S;
         let r = result_lines(&lines(), &wheel());
-        assert_eq!(
-            r.0,
-            vec![vec![S(7), S(8), S(9)], vec![S(4), S(8), S(0)]]
-        );
+        assert_eq!(r.0, vec![vec![S(7), S(8), S(9)], vec![S(4), S(8), S(0)]]);
     }
 
     #[test]
