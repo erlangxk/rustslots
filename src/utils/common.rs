@@ -22,17 +22,6 @@ impl ReelMeta {
 pub struct Symbol(pub u8);
 
 #[derive(Debug)]
-pub struct ReelStrips(pub Vec<Vec<Symbol>>);
-
-impl Deref for ReelStrips {
-    type Target = Vec<Vec<Symbol>>;
-
-    fn deref(&self) -> &Vec<Vec<Symbol>> {
-        &self.0
-    }
-}
-
-#[derive(Debug)]
 pub struct Wheel(pub Vec<Vec<Symbol>>);
 impl Deref for Wheel {
     type Target = Vec<Vec<Symbol>>;

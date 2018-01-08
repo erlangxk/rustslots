@@ -1,10 +1,23 @@
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
-use super::common::{Matrix, ReelMeta, ReelStrips, Symbol, Wheel};
+use super::common::{Matrix, ReelMeta, Symbol, Wheel};
 
 type ReplacementTable = HashMap<Symbol, Symbol>;
-type Line = Vec<usize>;
-type Reel = Vec<Symbol>;
+pub type ReelStrips<'a> = &'a [&'a [Symbol]];
+type Reel<'a> = &'a [Symbol];
+
+pub fn reel_metas_with_same_len(len: u8, reels: ReelStrips) -> Vec<ReelMeta> {
+    reels.iter().map(|r| ReelMeta(len, r.len())).collect()
+}
+
+pub fn reel_metas_with_diff_len(lens: &[u8], reels: ReelStrips) -> Vec<ReelMeta> {
+    assert_eq!(lens.len(), reels.len());
+    reels
+        .iter()
+        .zip(lens)
+        .map(|(r, l)| ReelMeta(*l, r.len()))
+        .collect()
+}
 
 fn ring(max: usize, start: usize, len: u8) -> Vec<usize> {
     let lus = len as usize;
@@ -36,11 +49,11 @@ pub fn random_matrix(reels_metas: &[ReelMeta]) -> Matrix {
     matrix(reels_metas, rng)
 }
 
-fn line_pick(line: &Line, reel: &Reel) -> Vec<Symbol> {
+fn line_pick(line: &Vec<usize>, reel: Reel) -> Vec<Symbol> {
     line.iter().map(|&i| reel[i]).collect()
 }
 
-fn line_replace(line: &Line, reel: &Reel, replace_table: &ReplacementTable) -> Vec<Symbol> {
+fn line_replace(line: &Vec<usize>, reel: Reel, replace_table: &ReplacementTable) -> Vec<Symbol> {
     line.iter()
         .map(|&i| {
             let s = reel[i];
@@ -52,9 +65,9 @@ fn line_replace(line: &Line, reel: &Reel, replace_table: &ReplacementTable) -> V
         .collect()
 }
 
-pub fn crop<F>(reel_strips: &ReelStrips, matrix: &Matrix, line_crop: F) -> Wheel
+pub fn crop<F>(reel_strips: ReelStrips, matrix: &Matrix, line_crop: F) -> Wheel
 where
-    F: Fn(&Line, &Reel) -> Vec<Symbol>,
+    F: Fn(&Vec<usize>, Reel) -> Vec<Symbol>,
 {
     Wheel(
         matrix
@@ -65,13 +78,13 @@ where
     )
 }
 
-pub fn random_spin(reels_metas: &[ReelMeta], reel_strips: &ReelStrips) -> Wheel {
+pub fn random_spin(reels_metas: &[ReelMeta], reel_strips: ReelStrips) -> Wheel {
     crop(reel_strips, &random_matrix(reels_metas), line_pick)
 }
 
 pub fn random_spin_replace(
     reels_metas: &[ReelMeta],
-    reel_strips: &ReelStrips,
+    reel_strips: ReelStrips,
     replace_table: &ReplacementTable,
 ) -> Wheel {
     crop(reel_strips, &random_matrix(reels_metas), |line, reel| {
@@ -105,10 +118,10 @@ mod tests {
     #[test]
     fn test_crop_noop() {
         let matrix = vec![vec![1, 3, 5, 2], vec![7, 8, 9, 0]];
-        let reelstrips = ReelStrips(vec![
-            vec![S(9), S(11), S(2), S(33), S(24), S(5)],
-            vec![S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
-        ]);
+        let reelstrips: [&[S]; 2] = [
+            &[S(9), S(11), S(2), S(33), S(24), S(5)],
+            &[S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
+        ];
         let result = vec![
             vec![S(11), S(33), S(5), S(2)],
             vec![S(7), S(8), S(9), S(10)],
@@ -125,10 +138,10 @@ mod tests {
     #[test]
     fn test_crop_11to99() {
         let matrix = vec![vec![1, 3, 5, 2], vec![7, 8, 9, 0]];
-        let reelstrips = ReelStrips(vec![
-            vec![S(9), S(11), S(2), S(33), S(24), S(5)],
-            vec![S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
-        ]);
+        let reelstrips: [&[Symbol]; 2] = [
+            &[S(9), S(11), S(2), S(33), S(24), S(5)],
+            &[S(10), S(1), S(2), S(3), S(4), S(5), S(6), S(7), S(8), S(9)],
+        ];
         let result = vec![
             vec![S(99), S(33), S(5), S(2)],
             vec![S(7), S(8), S(9), S(10)],
@@ -139,5 +152,16 @@ mod tests {
                 line_replace(line, reel, &hashmap!(S(11)=> S(99)))
             }).0
         );
+    }
+
+    #[test]
+    fn test_reel_metas() {
+        let reelstrips: [&[S]; 2] = [&[S(0), S(1), S(2)], &[S(3), S(4), S(5), S(6)]];
+        let r = reel_metas_with_same_len(2, &reelstrips);
+        assert_eq!(r, vec![ReelMeta(2, 3), ReelMeta(2, 4)]);
+
+        let lens = [1, 3];
+        let r = reel_metas_with_diff_len(&lens, &reelstrips);
+        assert_eq!(r, vec![ReelMeta(1, 3), ReelMeta(3, 4)]);
     }
 }

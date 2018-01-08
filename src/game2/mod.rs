@@ -1,10 +1,10 @@
 mod configs;
 
-use utils::common::{ReelMeta, ReelStrips, Spin, Symbol};
+use utils::common::{ReelMeta, Spin, Symbol};
 use utils::subst::parse_line_with_wild;
 use utils::calc::{calc_mul, MulResult, PayTable};
-use utils::reels::random_spin;
-use utils::lines::{lines_result, reel_metas_with_same_len, LinesResult};
+use utils::reels::{random_spin, reel_metas_with_same_len};
+use utils::lines::{lines_result, LinesResult};
 use utils::scatter::count_single_scatter_unique;
 
 //RTP 97.00
@@ -46,14 +46,13 @@ fn calc_result(result: &LinesResult, pt: &PayTable) -> Vec<MulResult> {
 #[derive(Debug)]
 pub struct Game {
     reel_metas: Vec<ReelMeta>,
-    reel_strips: ReelStrips,
     normal_pay_table: PayTable,
     scatter_pay_table: PayTable,
 }
 
 impl Spin for Game {
     fn spin(&self, line_bet: f64) -> (f64, f64) {
-        let r = random_spin(&self.reel_metas, &self.reel_strips);
+        let r = random_spin(&self.reel_metas, &configs::REELSTRIPS);
         let sm = scatter_result(&r, &self.scatter_pay_table);
         let r = lines_result(&configs::LINES, &r);
         let r = calc_result(&r, &self.normal_pay_table);
@@ -65,10 +64,8 @@ impl Spin for Game {
 
 impl Game {
     pub fn new() -> Game {
-        let reel_strips = configs::reel_strips();
         Game {
-            reel_metas: reel_metas_with_same_len(3, &reel_strips),
-            reel_strips,
+            reel_metas: reel_metas_with_same_len(3, &configs::REELSTRIPS),
             normal_pay_table: configs::normal_pay_table(),
             scatter_pay_table: configs::scatter_pay_table(),
         }

@@ -1,10 +1,10 @@
 mod configs;
 
-use utils::common::{ReelMeta, ReelStrips, Spin, Symbol, Wheel};
+use utils::common::{ReelMeta, Spin, Symbol, Wheel};
 use utils::subst::parse_line_with_wild;
 use utils::calc::{calc_mul, MulResult, PayTable};
-use utils::reels::{random_spin, random_spin_replace};
-use utils::lines::{lines_result, reel_metas_with_diff_len, LinesResult};
+use utils::reels::{random_spin, random_spin_replace, reel_metas_with_diff_len, ReelStrips};
+use utils::lines::{lines_result, LinesResult};
 use utils::scatter::count_single_scatter_duplicate;
 use rand::{thread_rng, Rng};
 
@@ -13,13 +13,8 @@ use rand::{thread_rng, Rng};
 #[derive(Debug)]
 pub struct Game {
     reel_metas_m1: Vec<ReelMeta>,
-    reel_strips_m1: ReelStrips,
-
     reel_metas_m2: Vec<ReelMeta>,
-    reel_strips_m2: ReelStrips,
-
     reel_metas_f1: Vec<ReelMeta>,
-    reel_strips_f1: ReelStrips,
     normal_pay_table: PayTable,
     mystery_replacement_table: Vec<(f64, Symbol)>,
 }
@@ -37,7 +32,7 @@ fn scatter_result(wheel: &Wheel) -> u16 {
 fn spin_replace(
     mystery_replacement_table: &Vec<(f64, Symbol)>,
     reel_metas: &Vec<ReelMeta>,
-    reel_strips: &ReelStrips,
+    reel_strips: ReelStrips,
 ) -> Wheel {
     let mut rng = thread_rng();
     let replace_map = configs::replace_mystery(rng.next_f64(), mystery_replacement_table);
@@ -72,21 +67,14 @@ impl Game {
     pub fn new() -> Game {
         let reel_lens: &[u8] = &configs::REEL_LENS;
 
-        let reel_strips_m1 = configs::reel_strips_m1();
-        let reel_metas_m1 = reel_metas_with_diff_len(&reel_lens, &reel_strips_m1);
 
-        let reel_strips_m2 = configs::reel_strips_m2();
-        let reel_metas_m2 = reel_metas_with_diff_len(&reel_lens, &reel_strips_m2);
-
-        let reel_strips_f1 = configs::reel_strips_f1();
-        let reel_metas_f1 = reel_metas_with_diff_len(&reel_lens, &reel_strips_f1);
+        let reel_metas_m1 = reel_metas_with_diff_len(&reel_lens, &configs::REELSTRIPS_M1);
+        let reel_metas_m2 = reel_metas_with_diff_len(&reel_lens, &configs::REELSTRIPS_M2);
+        let reel_metas_f1 = reel_metas_with_diff_len(&reel_lens, &configs::REELSTRIPS_F1);
         let mystery_replacement_table = configs::mystery_replacement_table();
         Game {
-            reel_strips_m1,
             reel_metas_m1,
-            reel_strips_m2,
             reel_metas_m2,
-            reel_strips_f1,
             reel_metas_f1,
             normal_pay_table: configs::normal_pay_table(),
             mystery_replacement_table,
@@ -100,11 +88,11 @@ impl Game {
             let wheel = spin_replace(
                 &self.mystery_replacement_table,
                 &self.reel_metas_m1,
-                &self.reel_strips_m1,
+                &configs::REELSTRIPS_M1,
             );
             (wheel, 0)
         } else {
-            let wheel = random_spin(&self.reel_metas_m2, &self.reel_strips_m2);
+            let wheel = random_spin(&self.reel_metas_m2, &configs::REELSTRIPS_M2);
             let freespins = scatter_result(&wheel);
             (wheel, freespins)
         }
@@ -114,7 +102,7 @@ impl Game {
         spin_replace(
             &self.mystery_replacement_table,
             &self.reel_metas_f1,
-            &self.reel_strips_f1,
+            &configs::REELSTRIPS_F1,
         )
     }
 }
